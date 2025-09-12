@@ -1,0 +1,47 @@
+version: '3.9'
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: devlogr-mysql
+    restart: always
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_DATABASE: devlogr
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_USER: devlogr
+      MYSQL_PASSWORD: secret
+    volumes:
+      - mysql-data:/var/lib/mysql
+    command: --default-authentication-plugin=mysql_native_password
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: devlogr-phpmyadmin
+    restart: always
+    ports:
+      - "8080:80"
+    environment:
+      PMA_HOST: mysql
+      MYSQL_ROOT_PASSWORD: secret
+
+  laravel-api:
+    build:
+      context: ./laravel-api
+    container_name: devlogr-laravel
+    ports:
+      - "8000:8000"
+    depends_on:
+      - mysql
+    volumes:
+      - ./laravel-api:/var/www/html
+    environment:
+      DB_CONNECTION: mysql
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_DATABASE: devlogr
+      DB_USERNAME: devlogr
+      DB_PASSWORD: secret
+
+volumes:
+  mysql-data:
