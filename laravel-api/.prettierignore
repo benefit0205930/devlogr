@@ -1,0 +1,12 @@
+vendor/
+node_modules/
+bootstrap/cache/
+storage/
+public/build/
+public/hot/
+*.blade.php
+*.php
+composer.lock
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
