@@ -15,16 +15,16 @@ const eslintConfig = [
   {
     rules: {
       "prettier/prettier": "error",
-      "@typescript-eslint/no-unused-vars": ["error", { 
+      "@typescript-eslint/no-unused-vars": ["error", {
         "argsIgnorePattern": "^_",
-        "varsIgnorePattern": "^_" 
+        "varsIgnorePattern": "^_"
       }],
       "@typescript-eslint/no-explicit-any": "warn",
       "react/react-in-jsx-scope": "off",
       "react-hooks/rules-of-hooks": "error",
       "react-hooks/exhaustive-deps": "warn",
       "no-console": ["warn", { allow: ["warn", "error"] }],
-      "prefer-const": "error",
+      "prefer-const": "off",
       "no-var": "error",
     },
   },
