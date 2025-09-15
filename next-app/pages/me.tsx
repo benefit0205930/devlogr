@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { api } from '../lib/api'
+import api from '../lib/api'
 import { useRouter } from 'next/router'
 
 type User = {
@@ -14,48 +14,35 @@ export default function MePage() {
   const router = useRouter()
 
   useEffect(() => {
+    let mounted = true
+
     const fetchUser = async () => {
       try {
         const res = await api.get('/api/me')
+        if (!mounted) return
         setUser(res.data)
       } catch (err) {
-        console.error(err)
-        router.push('/login')
+        console.warn('not authenticated', err)
+        if (mounted) router.replace('/auth/login')
       } finally {
-        setLoading(false)
+        if (mounted) setLoading(false)
       }
     }
 
     fetchUser()
+
+    return () => {
+      mounted = false
+    }
   }, [router])
 
-  const handleLogout = async () => {
-    try {
-      await api.post('/logout')
-      router.push('/login')
-    } catch (err) {
-      console.error(err)
-    }
-  }
-
   if (loading) return <p>Loading...</p>
+  if (!user) return null
 
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center bg-gray-100">
-      <div className="bg-white p-8 rounded shadow-md w-full max-w-md text-center">
-        {user && (
-          <div>
-            <p className="text-2xl font-bold mb-6">Welcome, {user.name}!</p>
-            <p className="mb-4">Email: {user.email}</p>
-            <button
-              onClick={handleLogout}
-              className="w-full bg-red-500 text-white p-2 rounded hover:bg-red-600 transition"
-            >
-              Logout
-            </button>
-          </div>
-        )}
-      </div>
-    </main>
+    <div className="container mx-auto p-4">
+      <h1 className="text-2xl font-bold">Welcome, {user.name}</h1>
+      <pre className="mt-4 p-2 bg-gray-100 rounded">{JSON.stringify(user, null, 2)}</pre>
+    </div>
   )
 }
