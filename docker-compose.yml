@@ -30,7 +30,7 @@ services:
       context: ./laravel-api
     container_name: devlogr-laravel
     ports:
-      - "8000:8000"
+      - "8000:80"
     depends_on:
       - mysql
     volumes:
@@ -42,6 +42,9 @@ services:
       DB_DATABASE: devlogr
       DB_USERNAME: devlogr
       DB_PASSWORD: secret
+      APP_URL: http://localhost:8000
+      SANCTUM_STATEFUL_DOMAINS: localhost:3000,localhost:8000
+      SESSION_DOMAIN: localhost
 
 volumes:
   mysql-data:

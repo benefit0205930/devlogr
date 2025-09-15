@@ -2,3 +2,11 @@
 /vendor
 .serena
 CLAUDE.md
+
+# Cookie test files
+cookies*.txt
+cookiejar
+
+# Code formatter cache
+laravel-api/.php-cs-fixer.cache
+*.cache
