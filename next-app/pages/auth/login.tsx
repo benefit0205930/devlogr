@@ -5,18 +5,22 @@ import api from '../../lib/api'
 export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const router = useRouter()
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setLoading(true)
+    setError(null)
 
     try {
       await api.get('/sanctum/csrf-cookie')
-      const res = await api.post('/login', { email, password })
+      await api.post('/api/login', { email, password })
+
       router.push('/me')
     } catch (err) {
+      setError('Login failed. Please check your credentials.')
       console.error(err)
     } finally {
       setLoading(false)
@@ -43,6 +47,8 @@ export default function LoginPage() {
         <button className="w-full p-2 bg-blue-500 text-white" type="submit" disabled={loading}>
           {loading ? 'Logging in...' : 'Login'}
         </button>
+
+        {error && <p className="text-red-500 mt-2">{error}</p>}
       </form>
     </div>
   )

@@ -12,5 +12,9 @@ php artisan key:generate
 php artisan migrate
 
 ## phpmyadmin
-ユーザー名: devlogr
-パスワード: secret
+- ユーザー名: devlogr
+- パスワード: secret
+
+## ログイン情報：
+- メールアドレス: test@example.com
+- パスワード: password
