@@ -1,48 +1,21 @@
-import { useEffect, useState } from 'react'
-import api from '../lib/api'
-import { useRouter } from 'next/router'
-
-type User = {
-  id: number
-  name: string
-  email: string
-}
+import { useAuth } from '../contexts/AuthContext'
+import { AuthGuard } from '../components/AuthGuard'
 
 export default function MePage() {
-  const [user, setUser] = useState<User | null>(null)
-  const [loading, setLoading] = useState(true)
-  const router = useRouter()
-
-  useEffect(() => {
-    let mounted = true
-
-    const fetchUser = async () => {
-      try {
-        const res = await api.get('/api/me')
-        if (!mounted) return
-        setUser(res.data)
-      } catch (err) {
-        console.warn('not authenticated', err)
-        if (mounted) router.replace('/auth/login')
-      } finally {
-        if (mounted) setLoading(false)
-      }
-    }
-
-    fetchUser()
-
-    return () => {
-      mounted = false
-    }
-  }, [router])
-
-  if (loading) return <p>Loading...</p>
-  if (!user) return null
+  const { user, logout } = useAuth()
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold">Welcome, {user.name}</h1>
-      <pre className="mt-4 p-2 bg-gray-100 rounded">{JSON.stringify(user, null, 2)}</pre>
-    </div>
+    <AuthGuard>
+      <div className="container mx-auto p-4">
+        <h1 className="text-2xl font-bold">Welcome, {user?.name}</h1>
+        <pre className="mt-4 p-2 bg-gray-100 rounded">{JSON.stringify(user, null, 2)}</pre>
+        <button
+          onClick={logout}
+          className="mt-4 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+        >
+          Logout
+        </button>
+      </div>
+    </AuthGuard>
   )
 }

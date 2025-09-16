@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useRouter } from 'next/router'
-import api from '../../lib/api'
+import { useAuth } from '../../contexts/AuthContext'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -8,6 +8,7 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const router = useRouter()
+  const { login } = useAuth()
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -15,9 +16,7 @@ export default function LoginPage() {
     setError(null)
 
     try {
-      await api.get('/sanctum/csrf-cookie')
-      await api.post('/api/login', { email, password })
-
+      await login(email, password)
       router.push('/me')
     } catch (err) {
       setError('Login failed. Please check your credentials.')
