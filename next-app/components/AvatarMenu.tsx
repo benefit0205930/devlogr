@@ -1,8 +1,10 @@
 import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
 
+import type { User } from '../contexts/AuthContext'
+
 type Props = {
-  user: any
+  user: User
   onLogout: () => void
 }
 
