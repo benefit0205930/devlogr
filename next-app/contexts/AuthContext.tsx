@@ -44,18 +44,64 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }
 
   useEffect(() => {
-    checkAuth()
-  }, [])
+    let mounted = true
+    let interceptorId: number | null = null
+
+    const initAuth = async () => {
+      try {
+        await api.get('/sanctum/csrf-cookie')
+      } catch (err) {
+        console.error('CSRF cookie fetch failed:', err)
+      }
+
+      if (!mounted) return
+
+      await checkAuth()
+    }
+
+    const handleFocus = () => {
+      checkAuth().catch(() => {})
+    }
+
+    const setupInterceptor = () => {
+      interceptorId =
+        api.interceptors?.response?.use?.(
+          (res) => res,
+          (err) => {
+            const status = err?.response?.status
+            if (status === 401) {
+              setUser(null)
+              if (typeof window !== 'undefined' && !window.location.pathname.startsWith('/auth')) {
+                router.replace('/auth/login')
+              }
+            }
+            return Promise.reject(err)
+          }
+        ) ?? null
+    }
+
+    initAuth()
+    setupInterceptor()
+    window.addEventListener('focus', handleFocus)
+
+    return () => {
+      mounted = false
+      window.removeEventListener('focus', handleFocus)
+      if (interceptorId !== null && api.interceptors?.response?.eject) {
+        api.interceptors.response.eject(interceptorId)
+      }
+    }
+  }, [router])
 
   const login = async (email: string, password: string) => {
     await api.get('/sanctum/csrf-cookie')
-    await api.post('/api/login', { email, password })
+    await api.post('/login', { email, password })
     await checkAuth()
   }
 
   const logout = async () => {
     try {
-      await api.post('/api/logout')
+      await api.post('/logout')
     } catch (error) {
       console.error('Logout error:', error)
     } finally {
