@@ -25,20 +25,11 @@ export default function Header() {
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center gap-4">
             <Link href="/" className="flex items-center gap-3">
-              <svg className="w-8 h-8 text-blue-600" viewBox="0 0 24 24" fill="none" aria-hidden>
-                <path
-                  d="M3 12h18M12 3v18"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-              <span className="font-semibold text-lg">devlogr</span>
+              <img src="/images/front/logo.svg" alt="devlogr" className="h-10 w-auto" />
             </Link>
 
             {/* Search - optional (desktop only) */}
-            <div className="hidden md:block">
+            {/* <div className="hidden md:block">
               <label htmlFor="site-search" className="sr-only">
                 サイト内検索
               </label>
@@ -56,7 +47,7 @@ export default function Header() {
                   検索
                 </button>
               </div>
-            </div>
+            </div> */}
           </div>
 
           <nav className="flex items-center gap-3">
