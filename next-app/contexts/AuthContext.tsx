@@ -35,9 +35,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       const response = await api.get('/api/me')
       setUser(response.data)
-    } catch (err) {
+    } catch (err: any) {
       setUser(null)
-      console.error('Auth check failed:', err)
+      // 401エラーは正常な動作（未認証）なので、エラーログは出さない
+      if (err?.response?.status !== 401) {
+        console.error('Auth check failed:', err)
+      }
     } finally {
       setLoading(false)
     }
@@ -50,8 +53,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const initAuth = async () => {
       try {
         await api.get('/sanctum/csrf-cookie')
-      } catch (err) {
-        console.error('CSRF cookie fetch failed:', err)
+      } catch (err: any) {
+        // バックエンドが起動していない場合などはエラーログを出さない
+        if (err?.code !== 'ERR_NETWORK' && err?.response?.status !== 401) {
+          console.error('CSRF cookie fetch failed:', err)
+        }
       }
 
       if (!mounted) return
@@ -69,9 +75,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           (res) => res,
           (err) => {
             const status = err?.response?.status
+            const path = err?.config?.url
+
+            // /api/meへの401エラーは正常な動作（未認証）
             if (status === 401) {
               setUser(null)
-              if (typeof window !== 'undefined' && !window.location.pathname.startsWith('/auth')) {
+
+              // /api/me以外の401エラーの場合のみリダイレクト
+              // かつ、認証が必要なページからのリクエストの場合のみ
+              if (
+                path !== '/api/me' &&
+                typeof window !== 'undefined' &&
+                !window.location.pathname.startsWith('/auth') &&
+                !window.location.pathname.match(/^\/$|^\/projects$/)
+              ) {
                 router.replace('/auth/login')
               }
             }
