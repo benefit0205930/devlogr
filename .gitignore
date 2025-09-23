@@ -1,7 +1,6 @@
 .env
 /vendor
 .serena
-CLAUDE.md
 
 # Cookie test files
 cookies*.txt

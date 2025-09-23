@@ -17,14 +17,6 @@ const nextConfig: NextConfig = {
           source: '/sanctum/:path*',
           destination: `${apiUrl}/sanctum/:path*`,
         },
-        {
-          source: '/login',
-          destination: `${apiUrl}/login`,
-        },
-        {
-          source: '/logout',
-          destination: `${apiUrl}/logout`,
-        },
       ]
     }
     return []
