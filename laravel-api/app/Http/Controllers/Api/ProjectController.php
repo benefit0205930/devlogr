@@ -15,4 +15,11 @@ class ProjectController extends Controller
 
         return response()->json($projects);
     }
+
+    public function show($id)
+    {
+        $project = Project::with('user')->findOrFail($id);
+
+        return response()->json($project);
+    }
 }

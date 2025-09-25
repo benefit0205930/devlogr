@@ -9,3 +9,4 @@ Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanc
 Route::middleware('auth:sanctum')->get('/me', [AuthController::class, 'me']);
 
 Route::get('/projects', [ProjectController::class, 'index']);
+Route::get('/project/{id}', [ProjectController::class, 'show']);

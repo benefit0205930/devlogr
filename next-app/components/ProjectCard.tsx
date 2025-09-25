@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { Project } from '@/types/project'
 
 interface ProjectCardProps {
@@ -37,33 +38,35 @@ export default function ProjectCard({ project }: ProjectCardProps) {
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
-      <div className="mb-4">
-        <h3 className="text-xl font-semibold mb-2">{project.title}</h3>
-        <p className="text-gray-600 line-clamp-3">{project.description}</p>
-      </div>
+    <Link href={`/projects/${project.id}`} className="block">
+      <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
+        <div className="mb-4">
+          <h3 className="text-xl font-semibold mb-2">{project.title}</h3>
+          <p className="text-gray-600 line-clamp-3">{project.description}</p>
+        </div>
 
-      <div className="space-y-2 mb-4">
+        <div className="space-y-2 mb-4">
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-gray-500">予算</span>
+            <span className="font-medium">
+              {formatBudget(project.budget_min, project.budget_max)}
+            </span>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-gray-500">納期</span>
+            <span className="font-medium">{formatDeadline(project.deadline)}</span>
+          </div>
+        </div>
+
         <div className="flex items-center justify-between">
-          <span className="text-sm text-gray-500">予算</span>
-          <span className="font-medium">
-            {formatBudget(project.budget_min, project.budget_max)}
+          <span
+            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(project.status)}`}
+          >
+            {getStatusLabel(project.status)}
           </span>
-        </div>
-        <div className="flex items-center justify-between">
-          <span className="text-sm text-gray-500">納期</span>
-          <span className="font-medium">{formatDeadline(project.deadline)}</span>
+          <span className="text-sm text-gray-500">投稿者: {project.user.name}</span>
         </div>
       </div>
-
-      <div className="flex items-center justify-between">
-        <span
-          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(project.status)}`}
-        >
-          {getStatusLabel(project.status)}
-        </span>
-        <span className="text-sm text-gray-500">投稿者: {project.user.name}</span>
-      </div>
-    </div>
+    </Link>
   )
 }
