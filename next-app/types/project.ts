@@ -7,11 +7,20 @@ export interface User {
   updated_at: string
 }
 
+export interface ProjectsParam {
+  search?: string
+  status?: string
+  budget_min?: number
+  budget_max?: number
+  sort?: string
+}
+
 export interface Project {
   id: number
   user_id: number
   title: string
   description: string
+  category?: string
   budget_min: number
   budget_max: number
   deadline: string
