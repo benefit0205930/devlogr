@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Project;
 use App\Models\User;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class BookmarkController extends Controller
@@ -36,7 +35,9 @@ class BookmarkController extends Controller
     // ユーザーのブックマーク一覧を取得
     public function index()
     {
+        /** @var User $user */
         $user = Auth::user();
+
         $bookmarkedProjects = $user->bookmarkedProjects()
             ->with('user')
             ->where('status', 'open')
