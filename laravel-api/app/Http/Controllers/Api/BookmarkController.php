@@ -20,14 +20,14 @@ class BookmarkController extends Controller
             $user->bookmarkedProjects()->detach($project->id);
             return response()->json([
                 'message' => 'ブックマークを解除しました。',
-                'bookmarked' => false,
+                'is_bookmarked' => false,
             ]);
         } else {
             // ブックマーク追加
             $user->bookmarkedProjects()->attach($project->id);
             return response()->json([
                 'message' => 'ブックマークに追加しました。',
-                'bookmarked' => true,
+                'is_bookmarked' => true,
             ]);
         }
     }

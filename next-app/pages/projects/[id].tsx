@@ -5,6 +5,7 @@ import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import { getProject } from '@/lib/projects'
 import { Project } from '@/types/project'
+import BookmarkButton from '@/components/BookmarkButton'
 
 export default function ProjectDetail() {
   const router = useRouter()
@@ -64,6 +65,10 @@ export default function ProjectDetail() {
       cancelled: 'bg-red-100 text-red-800',
     }
     return colorMap[status]
+  }
+
+  const handleBookmarkToggle = (isBookmarked: boolean) => {
+    if (project) setProject({ ...project, is_bookmarked: isBookmarked })
   }
 
   if (loading) {
@@ -126,6 +131,14 @@ export default function ProjectDetail() {
                 <div className="text-gray-400">
                   投稿者: {project.user.name} • 投稿日:{formatDate(project.created_at)}
                 </div>
+              </div>
+
+              <div className="ml-4">
+                <BookmarkButton
+                  projectId={project.id}
+                  isBookmarked={project.is_bookmarked || false}
+                  onToggle={handleBookmarkToggle}
+                />
               </div>
 
               <div className="space-y-6">

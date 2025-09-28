@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { Project } from '@/types/project'
+import BookmarkButton from './BookmarkButton'
 
 interface ProjectCardProps {
   project: Project
@@ -39,7 +40,10 @@ export default function ProjectCard({ project }: ProjectCardProps) {
 
   return (
     <Link href={`/projects/${project.id}`} className="block">
-      <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
+      <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow relative">
+        <div className="absolute top-4 right-4">
+          <BookmarkButton projectId={project.id} isBookmarked={project.is_bookmarked || false} />
+        </div>
         <div className="mb-4">
           <h3 className="text-xl font-semibold mb-2">{project.title}</h3>
           <p className="text-gray-600 line-clamp-3">{project.description}</p>

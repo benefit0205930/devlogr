@@ -28,6 +28,12 @@ export interface Project {
   created_at: string
   updated_at: string
   user: User
+  is_bookmarked?: boolean
+}
+
+export interface BookmarkResponse {
+  message: string
+  is_bookmarked: boolean
 }
 
 export interface ProjectsResponse {
