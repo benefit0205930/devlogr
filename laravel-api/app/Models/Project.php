@@ -28,4 +28,14 @@ class Project extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function bookmarks()
+    {
+        return $this->hasMany(Bookmark::class);
+    }
+
+    public function bookmarkedBy()
+    {
+        return $this->belongsToMany(User::class, 'bookmarks')->withTimestamps();
+    }
 }
