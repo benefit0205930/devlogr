@@ -235,6 +235,8 @@ export function initializeFluidSimulation(
   options: Partial<FluidConfig> = {}
 ): SimulationController {
   const config = { ...defaultConfig, ...options }
+
+  // WebGL2のサポートチェック
   const gl = canvas.getContext('webgl2', {
     alpha: true,
     depth: false,
@@ -244,7 +246,14 @@ export function initializeFluidSimulation(
   }) as GL | null
 
   if (!gl) {
-    throw new Error('WebGL2 がサポートされていません')
+    // WebGL1へのフォールバックを試みる
+    const gl1 = canvas.getContext('webgl') || canvas.getContext('experimental-webgl')
+    if (gl1) {
+      throw new Error(
+        'WebGL2 がサポートされていません。このブラウザはWebGL1のみ対応しています。最新のブラウザへのアップデートをお勧めします。'
+      )
+    }
+    throw new Error('WebGL がサポートされていません。別のブラウザをお試しください。')
   }
 
   const ext = gl.getExtension('EXT_color_buffer_float')
@@ -677,10 +686,10 @@ function createDoubleFBO(
     write: fbo2,
     swap() {
       const temp = this.read
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      ;(this as any).read = this.write
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      ;(this as any).write = temp
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        ; (this as any).read = this.write
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        ; (this as any).write = temp
     },
   }
 }
