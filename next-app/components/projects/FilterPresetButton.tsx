@@ -14,6 +14,8 @@ export const FilterPresetButton: FC<FilterPresetButtonProps> = ({
   onClick,
   onDelete,
 }) => {
+  const IconComponent = preset.icon
+
   return (
     <button
       onClick={onClick}
@@ -27,7 +29,7 @@ export const FilterPresetButton: FC<FilterPresetButtonProps> = ({
         }
       `}
     >
-      <span className="text-lg">{preset.icon}</span>
+      <IconComponent className="w-4 h-4" />
       <span>{preset.name}</span>
 
       {preset.isCustom && onDelete && (

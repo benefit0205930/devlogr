@@ -1,20 +1,25 @@
 import { FC, useState, useRef, useEffect } from 'react'
 import { ProjectSortBy } from '@/types/project'
+import { Star, Sparkles, Flame, DollarSign, Coins, Clock, Users, Users2 } from 'lucide-react'
 
 interface SortDropDownProps {
   value: ProjectSortBy
   onChange: (sortBy: ProjectSortBy) => void
 }
 
-const sortOptions: { value: ProjectSortBy; label: string; icon: string }[] = [
-  { value: 'recommended', label: 'おすすめ順', icon: '⭐' },
-  { value: 'newest', label: '新着順', icon: '🆕' },
-  { value: 'popular', label: '人気順', icon: '🔥' },
-  { value: 'price_high', label: '金額が高い順', icon: '💰' },
-  { value: 'price_low', label: '金額が低い順', icon: '💵' },
-  { value: 'deadline_soon', label: '締切が近い順', icon: '⏰' },
-  { value: 'application_few', label: '応募が少ない順', icon: '👥' },
-  { value: 'application_many', label: '応募が多い順', icon: '👨‍👩‍👧‍👦' },
+const sortOptions: {
+  value: ProjectSortBy
+  label: string
+  icon: React.ComponentType<{ className?: string }>
+}[] = [
+  { value: 'recommended', label: 'おすすめ順', icon: Star },
+  { value: 'newest', label: '新着順', icon: Sparkles },
+  { value: 'popular', label: '人気順', icon: Flame },
+  { value: 'price_high', label: '金額が高い順', icon: DollarSign },
+  { value: 'price_low', label: '金額が低い順', icon: Coins },
+  { value: 'deadline_soon', label: '締切が近い順', icon: Clock },
+  { value: 'application_few', label: '応募が少ない順', icon: Users },
+  { value: 'application_many', label: '応募が多い順', icon: Users2 },
 ]
 
 export const SortDropDown: FC<SortDropDownProps> = ({ value, onChange }) => {
@@ -52,7 +57,7 @@ export const SortDropDown: FC<SortDropDownProps> = ({ value, onChange }) => {
           backdrop-blur-sm
         "
       >
-        <span className="text-base">{currentOption.icon}</span>
+        <currentOption.icon className="w-4 h-4" />
         <span>{currentOption.label}</span>
         <svg
           className={`w-4 h-4 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
@@ -90,7 +95,7 @@ export const SortDropDown: FC<SortDropDownProps> = ({ value, onChange }) => {
                   }
                 `}
               >
-                <span className="text-base">{opt.icon}</span>
+                <opt.icon className="w-4 h-4" />
                 <span className="text-sm">{opt.label}</span>
                 {value === opt.value && (
                   <svg

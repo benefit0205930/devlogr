@@ -177,7 +177,10 @@ export default function ProjectsPage() {
                 />
               </div>
               <div className="flex gap-3">
-                <SortDropDown value={filters.sortBy} onChange={(value) => updateFilter('sortBy', value)} />
+                <SortDropDown
+                  value={filters.sortBy}
+                  onChange={(value) => updateFilter('sortBy', value)}
+                />
                 <button
                   onClick={() => setIsFilterPanelOpen(true)}
                   className="flex items-center gap-2 rounded-xl bg-white/10 px-4 py-2.5 text-sm font-medium text-white/90 border border-white/20 hover:bg-white/15 hover:border-white/30 transition-all backdrop-blur-sm lg:hidden"

@@ -79,11 +79,11 @@ export const PROJECT_CATEGORIES = {
   BLOCKCHAIN: 'ブロックチェーン',
   CLOUD: 'クラウド・インフラ',
   SECURITY: 'セキュリティ',
-  OTHER: 'その他'
+  OTHER: 'その他',
 } as const
 
 export type ProjectCategoryKey = keyof typeof PROJECT_CATEGORIES
-export type ProjectCategoryValue = typeof PROJECT_CATEGORIES[ProjectCategoryKey]
+export type ProjectCategoryValue = (typeof PROJECT_CATEGORIES)[ProjectCategoryKey]
 
 // 技術スタック
 export const TECH_STACKS = {
@@ -159,11 +159,11 @@ export const TECH_STACKS = {
   FIREBASE: 'Firebase',
   SUPABASE: 'Supabase',
   WORDPRESS: 'WordPress',
-  SHOPIFY: 'Shopify'
+  SHOPIFY: 'Shopify',
 } as const
 
 export type TechStackKey = keyof typeof TECH_STACKS
-export type TechStackValue = typeof TECH_STACKS[TechStackKey]
+export type TechStackValue = (typeof TECH_STACKS)[TechStackKey]
 
 // ソート順
 export type ProjectSortBy =
@@ -193,8 +193,8 @@ export interface ProjectFilters {
   // 期限フィルタ
   deadline: {
     daysRemaining: number | null // 残り日数（例：7 = 7日以内）
-    startDate?: string | null    // 期間開始日
-    endDate?: string | null      // 期間終了日
+    startDate?: string | null // 期間開始日
+    endDate?: string | null // 期間終了日
   }
 
   // 技術スタック
@@ -220,7 +220,7 @@ export interface ProjectFilters {
 export interface FilterPreset {
   id: string
   name: string
-  icon: string
+  icon: React.ComponentType<{ className?: string }>
   description?: string
   filters: Partial<ProjectFilters>
   isDefault?: boolean
@@ -235,7 +235,7 @@ export const PRICE_RANGES = [
   { label: '10万円〜30万円', min: 100000, max: 300000 },
   { label: '30万円〜50万円', min: 300000, max: 500000 },
   { label: '50万円〜100万円', min: 500000, max: 1000000 },
-  { label: '100万円〜', min: 1000000, max: null }
+  { label: '100万円〜', min: 1000000, max: null },
 ] as const
 
 // 期限のプリセット
@@ -244,7 +244,7 @@ export const DEADLINE_PRESETS = [
   { label: '1週間以内', days: 7 },
   { label: '2週間以内', days: 14 },
   { label: '1ヶ月以内', days: 30 },
-  { label: '3ヶ月以内', days: 90 }
+  { label: '3ヶ月以内', days: 90 },
 ] as const
 
 // APIリクエスト用のパラメータ（既存のProjectsParamを拡張）

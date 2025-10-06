@@ -9,6 +9,7 @@ import {
   ProjectSortBy,
 } from '@/types/project'
 import { useDebounce } from '@/hooks/useDebounce'
+import { Sprout, Gem, Rocket, Bot, Star } from 'lucide-react'
 
 const defaultFilters: ProjectFilters = {
   categories: [],
@@ -33,7 +34,7 @@ const filterPresets: FilterPreset[] = [
   {
     id: 'beginner-friendly',
     name: '初心者歓迎',
-    icon: '🌱',
+    icon: Sprout,
     description: '比較的簡単な案件',
     filters: {
       priceRange: { min: 50000, max: 200000 },
@@ -43,7 +44,7 @@ const filterPresets: FilterPreset[] = [
   {
     id: 'high-budget',
     name: '高単価案件',
-    icon: '💎',
+    icon: Gem,
     description: '50万円以上の案件',
     filters: {
       priceRange: { min: 500000, max: null },
@@ -53,7 +54,7 @@ const filterPresets: FilterPreset[] = [
   {
     id: 'urgent',
     name: '急募案件',
-    icon: '🚀',
+    icon: Rocket,
     description: '締切が近い案件',
     filters: {
       deadline: { daysRemaining: 7 },
@@ -63,7 +64,7 @@ const filterPresets: FilterPreset[] = [
   {
     id: 'ai-projects',
     name: 'AI・データ分析',
-    icon: '🤖',
+    icon: Bot,
     description: 'AI関連の案件',
     filters: {
       categories: ['AI_ML', 'DATA_ANALYSIS'],
@@ -248,7 +249,7 @@ export const useProjectFilters = () => {
 
   // フィルタ保存
   const saveCurrentFilters = useCallback(
-    (name: string, icon: string = '⭐') => {
+    (name: string, icon: React.ComponentType<{ className?: string }> = Star) => {
       const newPreset: FilterPreset = {
         id: `custom-${Date.now()}`,
         name,
