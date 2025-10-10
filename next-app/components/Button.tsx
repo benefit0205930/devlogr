@@ -13,6 +13,7 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
     | 'darkOutline'
     | 'darkGhost'
     | 'blackOutline'
+    | 'accent'
   size?: 'sm' | 'md' | 'lg'
   fullWidth?: boolean
   loading?: boolean
@@ -43,6 +44,7 @@ export default function Button({
     darkGhost: 'bg-transparent text-white hover:bg-white/10 focus:ring-white',
     blackOutline:
       'border-2 border-gray-900 bg-transparent text-gray-900 hover:bg-gray-900 hover:text-white focus:ring-gray-900',
+    accent: 'bg-[#1565c0] text-white hover:bg-[#0d47a1] focus:ring-[#1565c0]',
   }
 
   const sizes = {
