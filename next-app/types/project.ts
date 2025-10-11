@@ -258,3 +258,16 @@ export interface ProjectsFilterParams extends ProjectsParam {
   page?: number
   per_page?: number
 }
+
+// 案件投稿
+export interface ProjectCreateRequest {
+  title: string
+  category: string
+  description: string
+  budget_min: number
+  budget_max: number
+  deadline: string
+  technologies?: string[]
+  required_skills?: string[]
+  estimated_duration?: string
+}

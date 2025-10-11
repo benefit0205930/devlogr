@@ -1,5 +1,10 @@
 import api from './api'
-import { ProjectsResponse, ProjectsFilterParams, Project } from '@/types/project'
+import {
+  ProjectsResponse,
+  ProjectsFilterParams,
+  Project,
+  ProjectCreateRequest,
+} from '@/types/project'
 
 export const getProjects = async (page: number = 1, params?: ProjectsFilterParams) => {
   const queryParams = new URLSearchParams({
@@ -25,5 +30,10 @@ export const getProjects = async (page: number = 1, params?: ProjectsFilterParam
 
 export const getProject = async (id: string | number) => {
   const response = await api.get<Project>(`/api/project/${id}`)
+  return response.data
+}
+
+export const createProject = async (data: ProjectCreateRequest) => {
+  const response = await api.post<{ message: string; project: Project }>('/api/projects', data)
   return response.data
 }
