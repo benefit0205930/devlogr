@@ -39,17 +39,17 @@ export default function ProjectCard({ project }: ProjectCardProps) {
   }
 
   return (
-    <Link href={`/projects/${project.id}`} className="block">
-      <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow relative">
+    <Link href={`/projects/${project.id}`} className="block h-full">
+      <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow relative h-full flex flex-col">
         <div className="absolute top-4 right-4">
           <BookmarkButton projectId={project.id} isBookmarked={project.is_bookmarked || false} />
         </div>
-        <div className="mb-4">
+        <div className="mb-4 flex-1">
           <h3 className="text-xl font-semibold mb-2">{project.title}</h3>
           <p className="text-gray-600 line-clamp-3">{project.description}</p>
         </div>
 
-        <div className="space-y-2 mb-4">
+        <div className="space-y-2 mb-4 mt-auto">
           <div className="flex items-center justify-between">
             <span className="text-sm text-gray-500">予算</span>
             <span className="font-medium">

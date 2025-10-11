@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react'
+import Link from 'next/link'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import Hero from '@/components/Hero'
 import ProjectCard from '@/components/ProjectCard'
+import Button from '@/components/Button'
 import { getProjects } from '@/lib/projects'
 import { Project } from '@/types/project'
 
@@ -10,19 +12,18 @@ export default function Home() {
   const [projects, setProjects] = useState<Project[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [currentPage, setCurrentPage] = useState(1)
-  const [totalPages, setTotalPages] = useState(1)
+  const [totalProjects, setTotalProjects] = useState(0)
 
   useEffect(() => {
     fetchProjects()
-  }, [currentPage])
+  }, [])
 
   const fetchProjects = async () => {
     try {
       setLoading(true)
-      const response = await getProjects(currentPage)
+      const response = await getProjects(1, { per_page: 6 })
       setProjects(response.data)
-      setTotalPages(response.last_page)
+      setTotalProjects(response.total)
       setError(null)
     } catch (err) {
       setError('案件の取得に失敗しました')
@@ -40,7 +41,7 @@ export default function Home() {
         <Hero />
         <section className="py-12 px-4">
           <div className="max-w-7xl mx-auto">
-            <h2 className="text-3xl font-bold mb-8">案件一覧</h2>
+            <h2 className="text-3xl font-bold mb-8">最新の案件</h2>
             {loading ? (
               <div className="flex justify-center items-center min-h-[400px]">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
@@ -49,32 +50,35 @@ export default function Home() {
               <div className="text-center text-red-600 py-8">{error}</div>
             ) : (
               <>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
                   {projects.map((project) => (
                     <ProjectCard key={project.id} project={project} />
                   ))}
                 </div>
-                {totalPages > 1 && (
-                  <div className="mt-8 flex justify-center gap-2">
-                    <button
-                      onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
-                      disabled={currentPage === 1}
-                      className="px-4 py-2 border rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100"
+                <div className="flex justify-center">
+                  <Link href="/projects">
+                    <Button
+                      variant="accent"
+                      size="lg"
+                      className="shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200"
                     >
-                      前へ
-                    </button>
-                    <span className="px-4 py-2">
-                      {currentPage} / {totalPages}
-                    </span>
-                    <button
-                      onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
-                      disabled={currentPage === totalPages}
-                      className="px-4 py-2 border rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100"
-                    >
-                      次へ
-                    </button>
-                  </div>
-                )}
+                      <span>全{totalProjects}件の案件を見る</span>
+                      <svg
+                        className="w-5 h-5 ml-2 transition-transform group-hover:translate-x-1"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M13 7l5 5m0 0l-5 5m5-5H6"
+                        />
+                      </svg>
+                    </Button>
+                  </Link>
+                </div>
               </>
             )}
           </div>
