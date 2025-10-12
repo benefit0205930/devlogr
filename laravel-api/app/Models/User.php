@@ -52,6 +52,11 @@ class User extends Authenticatable
         return $this->hasMany(Bookmark::class);
     }
 
+    public function projects()
+    {
+        return $this->hasMany(Project::class);
+    }
+
     public function bookmarkedProjects()
     {
         return $this->belongsToMany(Project::class, 'bookmarks')->withTimestamps();

@@ -8,8 +8,11 @@ use Illuminate\Support\Facades\Route;
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 Route::middleware('auth:sanctum')->get('/me', [AuthController::class, 'me']);
-// ブックマーク
+// 認証が必要なルート
 Route::middleware('auth:sanctum')->group(function () {
+    // 案件投稿
+    Route::post('/projects', [ProjectController::class, 'store']);
+    // ブックマーク
     Route::post('/projects/{project}/bookmark', [BookmarkController::class, 'toggle']);
     Route::get('/bookmarks', [BookmarkController::class, 'index']);
 });
