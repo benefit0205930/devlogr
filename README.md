@@ -18,3 +18,6 @@ php artisan migrate
 ## ログイン情報：
 - メールアドレス: test@example.com
 - パスワード: password
+
+## ドキュメント
+- [管理画面導入の必要性と実装プラン](docs/pans.md)
