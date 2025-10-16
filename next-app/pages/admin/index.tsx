@@ -2,6 +2,12 @@ import Head from 'next/head'
 import AdminLayout from '../../components/admin/AdminLayout'
 import { AuthGuard } from '../../components/AuthGuard'
 
+// TODO: API実装が必要
+// - GET /api/admin/metrics - KPIメトリクス取得
+// - GET /api/admin/activities - 最近のアクティビティ取得
+// - GET /api/admin/projects/pending - 審査待ち案件一覧取得
+
+// MOCK DATA: 以下は全てダミーデータ。実際のAPIからデータ取得する必要がある
 const metrics = [
   { label: '承認待ち案件', value: '18', delta: '+3', trend: 'bg-amber-100 text-amber-600' },
   { label: '本日の通報', value: '5', delta: '+2', trend: 'bg-rose-100 text-rose-600' },
@@ -93,6 +99,7 @@ function DashboardContent() {
                 案件審査 SLA は 12 時間を目安にしましょう。
               </p>
             </div>
+            {/* TODO: /admin/projects/pending ページへのリンクを実装 */}
             <button className="rounded-md border border-slate-200 px-3 py-1.5 text-sm font-medium text-slate-600 transition hover:bg-slate-50">
               一覧を見る
             </button>
@@ -114,6 +121,7 @@ function DashboardContent() {
                   <span className="text-xs text-slate-400">申請日時: {review.submittedAt}</span>
                 </div>
                 <div className="flex gap-2">
+                  {/* TODO: 詳細ページへのリンクと承認処理を実装 */}
                   <button className="rounded-md border border-slate-200 px-3 py-1.5 text-sm font-medium text-slate-600 transition hover:bg-slate-50">
                     詳細
                   </button>

@@ -84,5 +84,176 @@
 - 共通レイアウトとしてサイドバー・トップバー・モバイルドロワーを整備。今後は RBAC に基づくメニュー出し分けと API 連携が必要。
 - モバイル時のレイアウト最適化（カード幅、リスト操作性）は追加検討が必要なため、別途タスク化する。
 
+## 8. 管理画面API実装計画
+
+### 8.1 現状の課題
+現在の管理画面 (`/admin`) は **全てモックデータ** で動作しており、実際のデータベースと連携していない。
+以下のデータが全てハードコーディングされている:
+- KPIメトリクス (承認待ち案件数、通報数、継続率、SLA)
+- 最近のアクティビティ (架空のユーザー名・操作履歴)
+- 審査待ち案件一覧 (架空の会社名・案件データ)
+
+### 8.2 必要なAPI一覧
+
+#### 8.2.1 ダッシュボード用API (優先度: 高)
+
+**1. KPIメトリクス取得**
+```
+GET /api/admin/metrics
+認証: 必須 (管理者権限)
+レスポンス:
+{
+  "pending_projects_count": 18,
+  "pending_projects_delta": "+3",
+  "reports_today_count": 5,
+  "reports_today_delta": "+2",
+  "monthly_retention_rate": "87%",
+  "monthly_retention_delta": "+4%",
+  "average_sla_hours": "2.6h",
+  "average_sla_delta": "-0.4h"
+}
+```
+
+**2. 最近のアクティビティ取得**
+```
+GET /api/admin/activities?limit=10
+認証: 必須 (管理者権限)
+レスポンス:
+{
+  "activities": [
+    {
+      "id": 1,
+      "time": "08:24",
+      "title": "案件「AI 記事ライター」を承認",
+      "by": "佐藤 ひかり",
+      "role": "オペレーター",
+      "created_at": "2025-10-17T08:24:00Z"
+    }
+  ]
+}
+```
+
+**3. 審査待ち案件一覧取得**
+```
+GET /api/admin/projects/pending?limit=10
+認証: 必須 (管理者権限)
+レスポンス:
+{
+  "projects": [
+    {
+      "id": "PRJ-4821",
+      "title": "Next.js SaaS の UI 改修",
+      "client": {
+        "id": 123,
+        "name": "株式会社オーロラ"
+      },
+      "budget_min": 300000,
+      "budget_max": 350000,
+      "submitted_at": "2025-10-10T21:40:00Z"
+    }
+  ]
+}
+```
+
+#### 8.2.2 案件管理API (優先度: 高)
+
+```
+GET    /api/admin/projects              - 全案件一覧 (フィルタ・ページネーション対応)
+GET    /api/admin/projects/:id          - 案件詳細取得
+PATCH  /api/admin/projects/:id/approve  - 案件承認
+PATCH  /api/admin/projects/:id/reject   - 案件却下
+DELETE /api/admin/projects/:id          - 案件削除
+```
+
+#### 8.2.3 ユーザー管理API (優先度: 中)
+
+```
+GET    /api/admin/users           - 全ユーザー一覧
+GET    /api/admin/users/:id       - ユーザー詳細
+PATCH  /api/admin/users/:id/ban   - ユーザーBAN
+PATCH  /api/admin/users/:id/unban - BAN解除
+PATCH  /api/admin/users/:id/role  - 権限変更
+```
+
+#### 8.2.4 決済・取引管理API (優先度: 中)
+
+```
+GET   /api/admin/payments              - 決済履歴一覧
+GET   /api/admin/payments/:id          - 決済詳細
+PATCH /api/admin/payments/:id/approve  - 支払い承認
+```
+
+#### 8.2.5 サポート対応API (優先度: 低)
+
+```
+GET   /api/admin/reports              - 通報一覧
+GET   /api/admin/reports/:id          - 通報詳細
+PATCH /api/admin/reports/:id/resolve  - 通報解決
+```
+
+### 8.3 実装手順
+
+#### Phase 1: 権限管理基盤 (1週目)
+- [ ] `users` テーブルに `role` カラム追加 (enum: 'user', 'admin')
+- [ ] 管理者権限チェック用ミドルウェア `EnsureUserIsAdmin` 作成
+- [ ] 既存ユーザーの1人を管理者に昇格 (Seeder)
+
+#### Phase 2: ダッシュボードAPI実装 (1-2週目)
+- [ ] `AdminDashboardController` 作成
+- [ ] `GET /api/admin/metrics` 実装
+  - `projects` テーブルから承認待ち案件をカウント
+  - 前日比の差分計算ロジック実装
+- [ ] `AdminActivity` モデル作成 (監査ログ用テーブル)
+- [ ] `GET /api/admin/activities` 実装
+- [ ] `GET /api/admin/projects/pending` 実装
+
+#### Phase 3: 案件管理API実装 (2-3週目)
+- [ ] `AdminProjectController` 作成
+- [ ] `GET /api/admin/projects` - 全案件一覧 (ページネーション)
+- [ ] `PATCH /api/admin/projects/:id/approve` - 承認処理
+  - `status` を `draft` → `open` に変更
+  - 監査ログ記録
+- [ ] `PATCH /api/admin/projects/:id/reject` - 却下処理
+- [ ] フロントエンド: 承認・却下ボタンにAPI呼び出し実装
+
+#### Phase 4: ユーザー管理API実装 (3-4週目)
+- [ ] `AdminUserController` 作成
+- [ ] `users` テーブルに `banned_at` カラム追加
+- [ ] `PATCH /api/admin/users/:id/ban` 実装
+- [ ] `/admin/users` ページ作成
+
+#### Phase 5: 決済・サポートAPI (4週目以降)
+- [ ] `AdminPaymentController` と `AdminReportController` 作成
+- [ ] 各種ページ実装
+
+### 8.4 データベース設計
+
+#### `admin_activities` テーブル (監査ログ)
+```sql
+CREATE TABLE admin_activities (
+  id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  admin_user_id BIGINT UNSIGNED NOT NULL,
+  action VARCHAR(255) NOT NULL,
+  target_type VARCHAR(255) NULL,
+  target_id BIGINT UNSIGNED NULL,
+  description TEXT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (admin_user_id) REFERENCES users(id)
+);
+```
+
+#### `users` テーブル変更
+```sql
+ALTER TABLE users ADD COLUMN role ENUM('user', 'admin') DEFAULT 'user';
+ALTER TABLE users ADD COLUMN banned_at TIMESTAMP NULL;
+```
+
+### 8.5 セキュリティ考慮事項
+- 全ての管理API は `auth:sanctum` + `admin` ミドルウェアで保護
+- CSRF 保護を有効化
+- レート制限: 管理APIは通常APIより緩め (例: 120req/min)
+- 監査ログで全ての管理操作を記録
+- 管理画面ページに `<meta name="robots" content="noindex" />` 設定済み
+
 ---
 このプランを指針に、クラウドワークスのようなマッチングサービスでも運用チームが迷わず動ける管理体験を目指せます。
