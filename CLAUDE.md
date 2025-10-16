@@ -100,6 +100,54 @@ docker exec -it devlogr-laravel php artisan test --filter TestName
 - Frontend expects Laravel API to handle CORS and authentication
 - Use environment variables for API endpoints configuration
 
+## Git & SSH Configuration
+
+### SSH Key Setup
+このプロジェクトはSSH接続でGitHubにpushします。dev用のSSH鍵を使用してください。
+
+**重要**: git pushする前に、必ずssh-agentに鍵が登録されているか確認すること！
+
+#### SSH鍵の確認
+```bash
+ssh-add -l
+```
+
+もし `The agent has no identities.` と表示されたら、以下のコマンドで鍵を追加してください:
+```bash
+ssh-add ~/.ssh/id_ed25519_dev
+```
+
+#### SSH接続テスト
+```bash
+ssh -T git@github.com-private
+# 成功すると: Hi benefit0205-jun! You've successfully authenticated...
+```
+
+### Git Remote URL
+リモートURLは **SSH形式** を使用します:
+```
+git@github.com-private:benefit0205-jun/devlogr.git
+```
+
+**注意**: `github.com-private` というホスト名を使うことで、`~/.ssh/config` の設定により自動的に `id_ed25519_dev` 鍵が使用されます。
+
+#### リモートURL確認・変更
+```bash
+# 現在のURL確認
+git remote -v
+
+# HTTPSからSSHに変更する場合
+git remote set-url origin git@github.com-private:benefit0205-jun/devlogr.git
+```
+
+### ~/.ssh/config 設定内容
+```
+Host github.com-private
+  HostName github.com
+  User git
+  IdentityFile ~/.ssh/id_ed25519_dev
+```
+
 ## MCP (Model Context Protocol) 接続情報
 
 ### chrome-devtools MCP

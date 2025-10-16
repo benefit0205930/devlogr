@@ -17,6 +17,33 @@ API は `php artisan test` または `composer test` で PHPUnit を実行し、
 ## コミットとプルリクエスト
 Git 履歴は `feat: ...`、`fix: ...` のように英小文字タイプ + コロン + 要約の Conventional Commits 風プレフィックスを採用しています。コミットはトピックごとに小さくまとめ、不要なビルド成果物を含めないでください。PR では概要、テスト手順、関連 Issue 番号を記載し、UI 変更時はスクリーンショットを添付します。バックエンドを変更する場合はマイグレーションの影響範囲とロールバック方法を明記してください。
 
+### Git Push時の注意事項
+このリポジトリは **SSH接続** でGitHubにpushします。push前に必ず以下を確認してください：
+
+1. **ssh-agentに鍵が登録されているか確認**
+   ```bash
+   ssh-add -l
+   ```
+
+2. **鍵が登録されていない場合は追加**
+   ```bash
+   ssh-add ~/.ssh/id_ed25519_dev
+   ```
+
+3. **SSH接続テスト**
+   ```bash
+   ssh -T git@github.com-private
+   # 成功: Hi benefit0205-jun! You've successfully authenticated...
+   ```
+
+4. **リモートURLの確認**
+   ```bash
+   git remote -v
+   # 正しい形式: git@github.com-private:benefit0205-jun/devlogr.git
+   ```
+
+**重要**: `github.com-private` というホスト名を使用します。これにより `~/.ssh/config` の設定で自動的に `id_ed25519_dev` 鍵が使用されます。
+
 ## 環境設定とセキュリティのヒント
 Laravel 環境変数は `laravel-api/.env` を `cp .env.example .env` で複製し、API キー発行後は `php artisan key:generate` を忘れずに実施します。機密情報は Git に含めず、共有には Docker Secrets や環境管理ツールを使ってください。Next.js 側の環境値は `next-app/.env.local` に定義し、必要に応じて `NEXT_PUBLIC_` プレフィックスで公開設定を行います。
 
