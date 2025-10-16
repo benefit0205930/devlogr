@@ -6,6 +6,21 @@ import Button from '@/components/Button'
 import { createProject } from '@/lib/projects'
 import { PROJECT_CATEGORIES, TECH_STACKS } from '@/types/project'
 
+type ValidationErrorResponse = {
+  response?: {
+    data?: {
+      errors?: Record<string, string>
+    }
+  }
+}
+
+const extractValidationErrors = (error: unknown): Record<string, string> | null => {
+  if (typeof error !== 'object' || error === null) return null
+
+  const response = (error as ValidationErrorResponse).response?.data?.errors
+  return response ?? null
+}
+
 export default function CreateProjectPage() {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
@@ -35,9 +50,10 @@ export default function CreateProjectPage() {
         estimated_duration: formData.estimated_duration || undefined,
       })
       router.push('/')
-    } catch (err: any) {
-      if (err.response?.data?.errors) {
-        setErrors(err.response.data.errors)
+    } catch (error: unknown) {
+      const validationErrors = extractValidationErrors(error)
+      if (validationErrors) {
+        setErrors(validationErrors)
       } else {
         setErrors({ general: '案件の投稿に失敗しました。' })
       }

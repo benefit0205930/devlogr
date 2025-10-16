@@ -686,10 +686,10 @@ function createDoubleFBO(
     write: fbo2,
     swap() {
       const temp = this.read
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        ; (this as any).read = this.write
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        ; (this as any).write = temp
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      ;(this as any).read = this.write
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      ;(this as any).write = temp
     },
   }
 }

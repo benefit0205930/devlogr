@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import Head from 'next/head'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
@@ -46,17 +46,13 @@ export default function ProjectsPage() {
     filters.technologies,
     filters.status,
     filters.priceRange,
-    filters.deadline,
+    filters.deadline.daysRemaining,
     filters.sortBy,
     debouncedSearchQuery,
   ])
 
   // プロジェクト取得
-  useEffect(() => {
-    fetchProjects()
-  }, [currentPage, debouncedSearchQuery, filters])
-
-  const fetchProjects = async () => {
+  const fetchProjects = useCallback(async () => {
     try {
       setLoading(true)
 
@@ -100,7 +96,22 @@ export default function ProjectsPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [
+    currentPage,
+    debouncedSearchQuery,
+    filters.bookmarkedOnly,
+    filters.categories,
+    filters.deadline,
+    filters.priceRange.max,
+    filters.priceRange.min,
+    filters.sortBy,
+    filters.status,
+    filters.technologies,
+  ])
+
+  useEffect(() => {
+    fetchProjects()
+  }, [fetchProjects])
 
   if (loading && projects.length === 0) {
     return (

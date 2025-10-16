@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
+import { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react'
 import { useRouter } from 'next/router'
 import api from '../lib/api'
 
@@ -26,25 +26,44 @@ export const useAuth = () => {
   return context
 }
 
+const extractErrorMeta = (error: unknown) => {
+  if (typeof error === 'object' && error !== null) {
+    const err = error as {
+      response?: { status?: number }
+      code?: string
+    }
+    return {
+      status: err.response?.status,
+      code: err.code,
+    }
+  }
+
+  return {
+    status: undefined,
+    code: undefined,
+  }
+}
+
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
   const router = useRouter()
 
-  const checkAuth = async () => {
+  const checkAuth = useCallback(async () => {
     try {
       const response = await api.get('/api/me')
       setUser(response.data)
-    } catch (err: any) {
+    } catch (error: unknown) {
+      const { status } = extractErrorMeta(error)
       setUser(null)
       // 401エラーは正常な動作（未認証）なので、エラーログは出さない
-      if (err?.response?.status !== 401) {
-        console.error('Auth check failed:', err)
+      if (status !== 401) {
+        console.error('Auth check failed:', error)
       }
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
 
   useEffect(() => {
     let mounted = true
@@ -53,10 +72,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const initAuth = async () => {
       try {
         await api.get('/sanctum/csrf-cookie')
-      } catch (err: any) {
+      } catch (error: unknown) {
+        const { code, status } = extractErrorMeta(error)
         // バックエンドが起動していない場合などはエラーログを出さない
-        if (err?.code !== 'ERR_NETWORK' && err?.response?.status !== 401) {
-          console.error('CSRF cookie fetch failed:', err)
+        if (code !== 'ERR_NETWORK' && status !== 401) {
+          console.error('CSRF cookie fetch failed:', error)
         }
       }
 
@@ -108,7 +128,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         api.interceptors.response.eject(interceptorId)
       }
     }
-  }, [router])
+  }, [checkAuth, router])
 
   const login = async (email: string, password: string) => {
     await api.get('/sanctum/csrf-cookie')

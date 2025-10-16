@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
@@ -14,11 +14,7 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null)
   const [totalProjects, setTotalProjects] = useState(0)
 
-  useEffect(() => {
-    fetchProjects()
-  }, [])
-
-  const fetchProjects = async () => {
+  const fetchProjects = useCallback(async () => {
     try {
       setLoading(true)
       const response = await getProjects(1, { per_page: 6 })
@@ -31,7 +27,11 @@ export default function Home() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
+
+  useEffect(() => {
+    fetchProjects()
+  }, [fetchProjects])
 
   return (
     <div className="flex min-h-screen flex-col bg-black text-white">

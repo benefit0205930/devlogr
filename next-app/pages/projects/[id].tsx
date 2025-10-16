@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import Head from 'next/head'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
@@ -14,14 +14,13 @@ export default function ProjectDetail() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    if (id) fetchProject()
-  }, [id])
+  const fetchProject = useCallback(async () => {
+    const projectId = Array.isArray(id) ? id[0] : id
+    if (!projectId) return
 
-  const fetchProject = async () => {
     try {
       setLoading(true)
-      const data = await getProject(id as string)
+      const data = await getProject(projectId)
       setProject(data)
       setError(null)
     } catch (err) {
@@ -30,7 +29,12 @@ export default function ProjectDetail() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [id])
+
+  useEffect(() => {
+    if (!id) return
+    fetchProject()
+  }, [id, fetchProject])
 
   const formatBudget = (min: number, max: number) => {
     return `¥${min.toLocaleString()} - ¥${max.toLocaleString()}`
