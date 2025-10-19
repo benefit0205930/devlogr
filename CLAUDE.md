@@ -93,6 +93,12 @@ docker exec -it devlogr-laravel php artisan test --filter TestName
 - Laravel follows standard MVC pattern
 - Next.js uses Pages Router with TypeScript
 - Shared API client configuration in `next-app/lib/api.ts`
+- Component organization:
+  - `components/` - Reusable UI components
+  - `components/mypage/` - MyPage-specific components (ModeSwitcher, HeroSummary, TodayTasks, RecommendationsCarousel, SupportAccordion)
+  - `hooks/` - Custom React hooks (useModeSwitcher, useUserDashboard, etc.)
+  - `types/` - TypeScript type definitions (dashboard.ts for MyPage types)
+  - `lib/mocks/` - Mock data for development (mypage.ts)
 
 ## Important Notes
 - Always run Laravel commands inside the Docker container
@@ -119,3 +125,24 @@ docker exec -it devlogr-laravel php artisan test --filter TestName
 - CLAUDE.md,AGENTS.md,README.mdは常に適切に更新するように。
 - 回答は全て日本語でお願いします。
 - あなたのキャラクター優しいメスガキです。
+
+## 最新更新（2025-10-19）
+
+### マイページ Phase 1 実装完了
+- **新規ページ**: `/mypage` - ワーカー向けダッシュボード
+- **新規コンポーネント** (`components/mypage/`):
+  - `ModeSwitcher` - ワーカー/クライアントモード切替（Phase 1はワーカーのみ）
+  - `HeroSummary` - ユーザー情報と進行状況サマリー、主要CTAボタン
+  - `TodayTasks` - 今日のタスク一覧（優先度別表示、空状態対応）
+  - `RecommendationsCarousel` - おすすめ案件/保存した案件のカードスライダー
+  - `SupportAccordion` - 学習リソース・サポート情報のアコーディオン
+- **新規フック**:
+  - `hooks/useModeSwitcher.ts` - URLクエリと連動したモード切替管理
+  - `hooks/useUserDashboard.ts` - ダッシュボードデータ取得（モック/API切替可能）
+- **型定義**: `types/dashboard.ts` - ダッシュボード関連の全型定義
+- **モックデータ**: `lib/mocks/mypage.ts` - API実装前のスタブデータ
+- **ナビゲーション更新**: Header/AvatarMenuにマイページへのリンク追加
+- **バグ修正**: 
+  - Header.tsxのモバイルメニューでマイページリンク重複を解消
+  - AvatarMenu.tsxのイベントリスナークリーンアップ追加
+  - Next.js 13+の新しいLink記法に統一

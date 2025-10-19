@@ -17,6 +17,9 @@ export default function AvatarMenu({ user, onLogout }: Props) {
       if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
     }
     document.addEventListener('click', onDoc)
+    return () => {
+      document.removeEventListener('click', onDoc)
+    }
   }, [])
 
   return (
@@ -39,14 +42,14 @@ export default function AvatarMenu({ user, onLogout }: Props) {
           className="absolute right-0 mt-2 w-48 bg-white border rounded shadow-md z-50"
         >
           <div className="p-2">
-            <Link href="/dashboard">
-              <a className="block px-2 py-2 rounded hover:bg-gray-50">ダッシュボード</a>
+            <Link href="/mypage" className="block px-2 py-2 rounded hover:bg-gray-50">
+              マイページ
             </Link>
-            <Link href="/profile">
-              <a className="block px-2 py-2 rounded hover:bg-gray-50">プロフィール</a>
+            <Link href="/profile" className="block px-2 py-2 rounded hover:bg-gray-50">
+              プロフィール
             </Link>
-            <Link href="/settings">
-              <a className="block px-2 py-2 rounded hover:bg-gray-50">設定</a>
+            <Link href="/settings" className="block px-2 py-2 rounded hover:bg-gray-50">
+              設定
             </Link>
             <button
               onClick={onLogout}

@@ -51,6 +51,11 @@ export default function Header() {
                   案件を投稿
                 </Button>
               </Link>
+              <Link href="/mypage">
+                <Button variant="blackOutline" size="sm">
+                  マイページ
+                </Button>
+              </Link>
             </div>
 
             {/* Auth area */}
@@ -106,22 +111,15 @@ export default function Header() {
                   案件を投稿
                 </Button>
               </Link>
+              <Link href="/mypage">
+                <Button variant="ghost" fullWidth className="justify-start">
+                  マイページ
+                </Button>
+              </Link>
               {user ? (
-                <>
-                  <Link href="/dashboard">
-                    <Button variant="ghost" fullWidth className="justify-start">
-                      ダッシュボード
-                    </Button>
-                  </Link>
-                  <Button
-                    onClick={handleLogout}
-                    variant="ghost"
-                    fullWidth
-                    className="justify-start"
-                  >
-                    ログアウト
-                  </Button>
-                </>
+                <Button onClick={handleLogout} variant="ghost" fullWidth className="justify-start">
+                  ログアウト
+                </Button>
               ) : (
                 <>
                   <Link href="/auth/login">
