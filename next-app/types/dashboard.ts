@@ -1,5 +1,21 @@
 export type DashboardMode = 'worker' | 'client'
 
+export type DashboardHeroVariant = 'default' | 'holiday' | 'firstVisit'
+
+export interface DashboardCTA {
+  label: string
+  href: string
+  ariaLabel?: string
+}
+
+export interface DashboardHeroCTASet {
+  experimentKey?: string
+  primary: DashboardCTA
+  secondary: DashboardCTA
+}
+
+export type DashboardHeroCTAVariants = Partial<Record<DashboardHeroVariant, DashboardHeroCTASet>>
+
 export interface DashboardSummary {
   userName: string
   headline?: string
@@ -8,6 +24,8 @@ export interface DashboardSummary {
   unreadMessages: number
   pendingReviews: number
   nextActionText?: string
+  variant?: DashboardHeroVariant
+  specialMessage?: string
 }
 
 export type DashboardTaskType = 'message' | 'milestone' | 'submission' | 'review' | 'reminder'
@@ -22,6 +40,8 @@ export interface DashboardTask {
   ctaHref?: string
   priority: 'low' | 'medium' | 'high'
   status: 'pending' | 'completed'
+  priorityLabel?: string
+  reminderLink?: string
 }
 
 export interface DashboardRecommendation {
@@ -33,6 +53,8 @@ export interface DashboardRecommendation {
   skills?: string[]
   href: string
   isNew?: boolean
+  workload?: string
+  rewardRange?: string
 }
 
 export interface SupportResource {
@@ -50,4 +72,5 @@ export interface DashboardData {
   recommendations: DashboardRecommendation[]
   savedProjects: DashboardRecommendation[]
   supportResources: SupportResource[]
+  ctaVariants: DashboardHeroCTAVariants
 }

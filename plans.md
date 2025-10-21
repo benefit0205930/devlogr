@@ -68,4 +68,34 @@
 - [x] マイページ本体（`pages/mypage/index.tsx`）とサブコンポーネント５種を新規作成。
 - [x] `useModeSwitcher` / `useUserDashboard` フックと `lib/mocks/mypage.ts` を用いてモックデータを配信。
 - [x] ヘッダーナビ・アバターメニューからマイページへの導線を追加。
+- [x] コードレビュー完了：モックには TODO 追記済み、既存ヘッダーナビ導線の差し替え確認済み。
+- [x] ドキュメント更新：CLAUDE.md、README.md、AGENTS.mdに実装詳細を追記。
+- [ ] Lintチェック通過：新規実装にエラーはないが、既存警告（`AuthContext` の `any` など）が残り `npm run lint` が失敗するため別途対応が必要。
 - [ ] API連携・Playwright E2E テストはPhase2検討（モックからの差し替え待ち）。
+
+## 進捗メモ（2025-10-21）
+- [x] `HeroSummary` に variant バッジと祝日メッセージを追加し、CTAを `useUserDashboard` 管理の実験セットへ移行。
+- [x] `TodayTasks` のアクセシビリティ改善（フォーカスリング、優先度ツールチップ、リマインダー導線）を実装。
+- [x] `RecommendationsCarousel` に稼働時間/報酬チップと終端「もっと見る」カードを追加。
+- [x] `SupportAccordion` / `ModeSwitcher` / `/mypage` ページへランドマーク・スキップリンクを付与。
+- [x] `type-check` npm スクリプトを追加し、最小実行要件をドキュメントへ反映する準備。
+
+## 追加実装計画（ワーカーモード Phase 1）
+
+### A. 体験強化タスク
+- [x] **ヒーローエリアの状態最適化**（2025-10-21 完了）`HeroSummary` に `variant` プロップと特別メッセージ表示を追加し、CTA 文言は `useUserDashboard` 由来の実験キー付きセットへ切り替え。
+- [x] **タスクカードの視認性向上**（2025-10-21 完了）`TodayTasks` に優先度ツールチップ / フォーカスリング / リマインダー導線を導入。
+- [x] **レコメンドの文脈情報追加**（2025-10-21 完了）カルーセルカードへ稼働時間・報酬レンジチップを表示し、末尾に「もっと見る」カードを配置。
+
+### B. データ層タスク
+- [x] `lib/mocks/mypage.ts` を拡張し、`ctaVariants`・`workload`・`rewardRange`・`priorityLabel`・`reminderLink` をスタブデータに追加。
+- [x] `hooks/useUserDashboard.ts` で CTA 定義を抽出し、variant 切り替えロジックを実装（将来の API マッピング TODO コメント追記済み）。
+
+### C. アクセシビリティ / QA
+- [x] `components/mypage` 配下の主要コンポーネントにランドマークと `aria-*` 属性を追加。
+- [x] `next-app/pages/mypage/index.tsx` にスキップリンクとメイン領域フォーカス管理を実装。
+- [x] `type-check` スクリプトを `package.json` に追加し、ローカル実行を Phase1 の最小要件に反映（CI 組み込みは別タスク）。
+
+### D. ドキュメント / コミュニケーション
+- [ ] `README.md` のマイページセクションへ UI の補足説明と操作メモを追記。
+- [ ] プロダクトオーナー向け共有資料（Notion）に体験強化項目の意図と測定指標（クリック率 / タスク完了率）を記録。

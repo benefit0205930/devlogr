@@ -51,6 +51,7 @@ npm install        # Install dependencies
 npm run dev        # Start development server (port 3000)
 npm run build      # Production build
 npm run lint       # Run ESLint
+npm run type-check # TypeScript type checking
 ```
 
 ### Backend (Laravel)
@@ -146,3 +147,10 @@ docker exec -it devlogr-laravel php artisan test --filter TestName
   - Header.tsxのモバイルメニューでマイページリンク重複を解消
   - AvatarMenu.tsxのイベントリスナークリーンアップ追加
   - Next.js 13+の新しいLink記法に統一
+
+### マイページ Phase 1 追加改善（2025-10-21）
+- `HeroSummary` に祝日バリアントと CTA 実験 (`ctaVariants`) を追加。
+- `TodayTasks` に優先度ツールチップ、フォーカスリング、リマインダー導線を導入。
+- `RecommendationsCarousel` に稼働時間/報酬レンジチップと終端「もっと見る」カードを追加。
+- `SupportAccordion`・`ModeSwitcher`・`/mypage` ページへ ARIA 属性とスキップリンクを適用。
+- `next-app/package.json` に `type-check` スクリプトを追加し、Lint と併せて実行する運用へ更新。
