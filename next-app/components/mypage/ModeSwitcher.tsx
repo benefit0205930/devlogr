@@ -30,7 +30,11 @@ export function ModeSwitcher({ mode, onChange }: ModeSwitcherProps) {
     <div className="bg-white border border-gray-100 rounded-2xl shadow-sm p-3">
       <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
         <div className="text-sm text-gray-500">利用モードを切り替えできます</div>
-        <div className="inline-flex rounded-xl bg-gray-100 p-1">
+        <div
+          className="inline-flex rounded-xl bg-gray-100 p-1"
+          role="radiogroup"
+          aria-label="利用モード"
+        >
           {options.map((option) => (
             <button
               key={option.value}
@@ -48,6 +52,10 @@ export function ModeSwitcher({ mode, onChange }: ModeSwitcherProps) {
                   ? 'bg-white shadow text-gray-900'
                   : 'text-gray-500 hover:text-gray-900'
               )}
+              role="radio"
+              aria-checked={mode === option.value}
+              aria-disabled={option.disabled}
+              tabIndex={mode === option.value ? 0 : -1}
             >
               <div className="leading-tight">{option.label}</div>
               <div className="text-[11px] text-gray-400 mt-1">{option.description}</div>

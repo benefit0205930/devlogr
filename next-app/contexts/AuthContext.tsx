@@ -35,11 +35,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       const response = await api.get('/api/me')
       setUser(response.data)
-    } catch (err: any) {
+    } catch (error: unknown) {
       setUser(null)
       // 401エラーは正常な動作（未認証）なので、エラーログは出さない
-      if (err?.response?.status !== 401) {
-        console.error('Auth check failed:', err)
+      if (getResponseStatus(error) !== 401) {
+        console.error('Auth check failed:', error)
       }
     } finally {
       setLoading(false)
@@ -53,10 +53,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const initAuth = async () => {
       try {
         await api.get('/sanctum/csrf-cookie')
-      } catch (err: any) {
+      } catch (error: unknown) {
         // バックエンドが起動していない場合などはエラーログを出さない
-        if (err?.code !== 'ERR_NETWORK' && err?.response?.status !== 401) {
-          console.error('CSRF cookie fetch failed:', err)
+        const code = getErrorCode(error)
+        const status = getResponseStatus(error)
+        if (code !== 'ERR_NETWORK' && status !== 401) {
+          console.error('CSRF cookie fetch failed:', error)
         }
       }
 
@@ -132,4 +134,28 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       {children}
     </AuthContext.Provider>
   )
+}
+
+interface ErrorWithResponse {
+  response?: {
+    status?: number
+  }
+}
+
+interface ErrorWithCode {
+  code?: string
+}
+
+function getResponseStatus(error: unknown): number | undefined {
+  if (typeof error === 'object' && error !== null && 'response' in error) {
+    return (error as ErrorWithResponse).response?.status
+  }
+  return undefined
+}
+
+function getErrorCode(error: unknown): string | undefined {
+  if (typeof error === 'object' && error !== null && 'code' in error) {
+    return (error as ErrorWithCode).code
+  }
+  return undefined
 }

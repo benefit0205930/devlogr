@@ -35,9 +35,11 @@ export default function CreateProjectPage() {
         estimated_duration: formData.estimated_duration || undefined,
       })
       router.push('/')
-    } catch (err: any) {
-      if (err.response?.data?.errors) {
-        setErrors(err.response.data.errors)
+    } catch (error: unknown) {
+      const fieldErrors = extractValidationErrors(error)
+
+      if (fieldErrors) {
+        setErrors(fieldErrors)
       } else {
         setErrors({ general: '案件の投稿に失敗しました。' })
       }
@@ -255,4 +257,33 @@ export default function CreateProjectPage() {
       </div>
     </>
   )
+}
+
+type ValidationErrorPayload = Record<string, string>
+
+interface ValidationErrorResponse {
+  response?: {
+    data?: {
+      errors?: ValidationErrorPayload
+    }
+  }
+}
+
+function extractValidationErrors(error: unknown): ValidationErrorPayload | null {
+  if (typeof error === 'object' && error !== null && 'response' in error) {
+    const withResponse = error as ValidationErrorResponse
+    const errors = withResponse.response?.data?.errors
+
+    if (errors && typeof errors === 'object') {
+      return Object.fromEntries(
+        Object.entries(errors).map(([key, value]) => {
+          if (Array.isArray(value)) {
+            return [key, value[0] ?? '']
+          }
+          return [key, String(value)]
+        })
+      )
+    }
+  }
+  return null
 }

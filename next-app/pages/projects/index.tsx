@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import Head from 'next/head'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
@@ -51,12 +51,7 @@ export default function ProjectsPage() {
     debouncedSearchQuery,
   ])
 
-  // プロジェクト取得
-  useEffect(() => {
-    fetchProjects()
-  }, [currentPage, debouncedSearchQuery, filters])
-
-  const fetchProjects = async () => {
+  const fetchProjects = useCallback(async () => {
     try {
       setLoading(true)
 
@@ -94,13 +89,18 @@ export default function ProjectsPage() {
       setTotalPages(response.last_page)
       setTotalProjects(response.total)
       setError(null)
-    } catch (err) {
+    } catch (error) {
       setError('案件の取得に失敗しました')
-      console.error(err)
+      console.error(error)
     } finally {
       setLoading(false)
     }
-  }
+  }, [currentPage, debouncedSearchQuery, filters])
+
+  // プロジェクト取得
+  useEffect(() => {
+    void fetchProjects()
+  }, [fetchProjects])
 
   if (loading && projects.length === 0) {
     return (

@@ -4,28 +4,46 @@ import { DashboardTask } from '@/types/dashboard'
 
 interface TodayTasksProps {
   tasks: DashboardTask[]
+  emptyStateReminderHref?: string
 }
 
-export function TodayTasks({ tasks }: TodayTasksProps) {
+export function TodayTasks({ tasks, emptyStateReminderHref }: TodayTasksProps) {
+  const headingId = 'mypage-today-tasks'
+
   if (tasks.length === 0) {
     return (
-      <section className="bg-white rounded-3xl border border-dashed border-gray-200 px-6 py-10 text-center shadow-sm">
-        <h2 className="text-lg font-semibold text-gray-900">今日のタスクはありません</h2>
+      <section
+        className="bg-white rounded-3xl border border-dashed border-gray-200 px-6 py-10 text-center shadow-sm"
+        aria-labelledby={headingId}
+        role="region"
+      >
+        <h2 id={headingId} className="text-lg font-semibold text-gray-900">
+          今日のタスクはありません
+        </h2>
         <p className="mt-2 text-sm text-gray-500">
           今のうちにプロフィール更新や新しい案件チェックをしてみましょ。
         </p>
-        <div className="mt-4 inline-flex gap-3">
+        <div className="mt-4 inline-flex flex-wrap justify-center gap-3 text-sm">
           <Link href="/projects">案件を探す</Link>
           <Link href="/profile">プロフィールを編集</Link>
+          <Link href={emptyStateReminderHref ?? '/notifications/reminders'}>
+            リマインダーを設定
+          </Link>
         </div>
       </section>
     )
   }
 
   return (
-    <section className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6">
+    <section
+      className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6"
+      aria-labelledby={headingId}
+      role="region"
+    >
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-semibold text-gray-900">今日のタスク</h2>
+        <h2 id={headingId} className="text-lg font-semibold text-gray-900">
+          今日のタスク
+        </h2>
         <Link href="/tasks" className="text-sm text-blue-600 hover:text-blue-700">
           タスク一覧を見る
         </Link>
@@ -36,9 +54,12 @@ export function TodayTasks({ tasks }: TodayTasksProps) {
           <article
             key={task.id}
             className={clsx(
-              'flex flex-col gap-4 rounded-2xl border border-gray-100 bg-gray-50/80 p-4 transition hover:bg-white hover:shadow-sm md:flex-row md:items-center md:justify-between',
+              'flex flex-col gap-4 rounded-2xl border border-gray-100 bg-gray-50/80 p-4 transition hover:bg-white hover:shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 md:flex-row md:items-center md:justify-between',
               priorityClass(task.priority)
             )}
+            tabIndex={0}
+            role="group"
+            aria-label={`${task.title}（${priorityLabel(task)}）`}
           >
             <div className="flex flex-col gap-2">
               <div className="flex items-center gap-3">
@@ -53,17 +74,37 @@ export function TodayTasks({ tasks }: TodayTasksProps) {
                 {task.dueDate && (
                   <span className="text-xs text-gray-500">期限: {formatDueDate(task.dueDate)}</span>
                 )}
+                {task.priorityLabel ? (
+                  <span
+                    className={clsx('text-[11px] font-medium', priorityAccentText(task.priority))}
+                    aria-hidden
+                  >
+                    {task.priorityLabel}
+                  </span>
+                ) : null}
               </div>
               <h3 className="text-sm font-semibold text-gray-900">{task.title}</h3>
               {task.description && <p className="text-xs text-gray-500">{task.description}</p>}
             </div>
-            {task.ctaHref && task.ctaLabel ? (
-              <Link
-                href={task.ctaHref}
-                className="inline-flex items-center justify-center rounded-full border border-blue-600 px-4 py-2 text-sm font-medium text-blue-600 hover:bg-blue-50 self-start md:self-auto"
-              >
-                {task.ctaLabel}
-              </Link>
+            {(task.ctaHref && task.ctaLabel) || task.reminderLink ? (
+              <div className="flex flex-col items-start gap-2 md:items-end">
+                {task.ctaHref && task.ctaLabel ? (
+                  <Link
+                    href={task.ctaHref}
+                    className="inline-flex items-center justify-center rounded-full border border-blue-600 px-4 py-2 text-sm font-medium text-blue-600 hover:bg-blue-50"
+                  >
+                    {task.ctaLabel}
+                  </Link>
+                ) : null}
+                {task.reminderLink ? (
+                  <Link
+                    href={task.reminderLink}
+                    className="text-xs text-blue-600 hover:text-blue-700"
+                  >
+                    リマインダーを設定
+                  </Link>
+                ) : null}
+              </div>
             ) : null}
           </article>
         ))}
@@ -115,6 +156,34 @@ function priorityClass(priority: DashboardTask['priority']) {
     case 'low':
     default:
       return 'border-l-4 border-l-emerald-300 pl-3'
+  }
+}
+
+function priorityAccentText(priority: DashboardTask['priority']) {
+  switch (priority) {
+    case 'high':
+      return 'text-red-600'
+    case 'medium':
+      return 'text-amber-600'
+    case 'low':
+    default:
+      return 'text-emerald-600'
+  }
+}
+
+function priorityLabel(task: DashboardTask) {
+  if (task.priorityLabel) {
+    return task.priorityLabel
+  }
+
+  switch (task.priority) {
+    case 'high':
+      return '優先度: 高'
+    case 'medium':
+      return '優先度: 中'
+    case 'low':
+    default:
+      return '優先度: 低'
   }
 }
 

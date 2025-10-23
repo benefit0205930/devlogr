@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import Head from 'next/head'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
@@ -14,23 +14,27 @@ export default function ProjectDetail() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    if (id) fetchProject()
-  }, [id])
+  const fetchProject = useCallback(async () => {
+    if (typeof id !== 'string') {
+      return
+    }
 
-  const fetchProject = async () => {
     try {
       setLoading(true)
-      const data = await getProject(id as string)
+      const data = await getProject(id)
       setProject(data)
       setError(null)
-    } catch (err) {
+    } catch (error) {
       setError('案件の取得に失敗しました。')
-      console.error(err)
+      console.error(error)
     } finally {
       setLoading(false)
     }
-  }
+  }, [id])
+
+  useEffect(() => {
+    void fetchProject()
+  }, [fetchProject])
 
   const formatBudget = (min: number, max: number) => {
     return `¥${min.toLocaleString()} - ¥${max.toLocaleString()}`

@@ -1,5 +1,6 @@
 import {
   DashboardData,
+  DashboardHeroCTAVariants,
   DashboardMode,
   DashboardRecommendation,
   DashboardSummary,
@@ -16,6 +17,8 @@ const workerSummary: DashboardSummary = {
   unreadMessages: 5,
   pendingReviews: 1,
   nextActionText: 'メッセージ返信が必要な案件があります',
+  variant: 'holiday',
+  specialMessage: '今日は祝日モード。軽く片付けられるタスクから始めませんか？',
 }
 
 const workerTasks: DashboardTask[] = [
@@ -29,6 +32,8 @@ const workerTasks: DashboardTask[] = [
     ctaHref: '/messages/ai-editor',
     priority: 'high',
     status: 'pending',
+    priorityLabel: '最優先: 24時間以内に対応推奨',
+    reminderLink: '/notifications/reminders/messages',
   },
   {
     id: 'task-2',
@@ -40,6 +45,8 @@ const workerTasks: DashboardTask[] = [
     ctaHref: '/projects/remote-support/milestones',
     priority: 'medium',
     status: 'pending',
+    priorityLabel: '優先: 明日までに提出',
+    reminderLink: '/notifications/reminders/milestones',
   },
   {
     id: 'task-3',
@@ -50,6 +57,8 @@ const workerTasks: DashboardTask[] = [
     ctaHref: '/profile',
     priority: 'low',
     status: 'pending',
+    priorityLabel: '低優先: 今週中の見直しでOK',
+    reminderLink: '/notifications/reminders/profile',
   },
 ]
 
@@ -63,6 +72,8 @@ const workerRecommendations: DashboardRecommendation[] = [
     skills: ['Next.js', 'Laravel', 'TypeScript'],
     href: '/projects/next-laravel',
     isNew: true,
+    workload: '週20時間〜',
+    rewardRange: '月60〜80万円想定',
   },
   {
     id: 'rec-2',
@@ -72,6 +83,8 @@ const workerRecommendations: DashboardRecommendation[] = [
     dueDate: new Date(Date.now() + 1000 * 60 * 60 * 24 * 10).toISOString(),
     skills: ['React', 'Tailwind CSS', '型設計'],
     href: '/projects/saas-dashboard',
+    workload: '週15〜25時間',
+    rewardRange: '単価: 6,000〜8,000円/時',
   },
   {
     id: 'rec-3',
@@ -81,6 +94,8 @@ const workerRecommendations: DashboardRecommendation[] = [
     dueDate: new Date(Date.now() + 1000 * 60 * 60 * 24 * 14).toISOString(),
     skills: ['Python', 'AWS', 'CI/CD'],
     href: '/projects/ai-automation',
+    workload: 'フルタイム (週40時間まで)',
+    rewardRange: '成果報酬制 (最大120万円)',
   },
 ]
 
@@ -92,6 +107,8 @@ const savedProjects: DashboardRecommendation[] = [
     budgetRange: '月額25万円〜',
     href: '/projects/ai-advisor',
     skills: ['アーキテクチャ設計', 'コードレビュー'],
+    workload: '週5〜8時間',
+    rewardRange: '月額25〜35万円',
   },
 ]
 
@@ -129,6 +146,7 @@ const clientPlaceholder: DashboardData = {
     unreadMessages: 0,
     pendingReviews: 0,
     nextActionText: '準備ができ次第お知らせいたします。',
+    variant: 'default',
   },
   todayTasks: [],
   recommendations: [],
@@ -142,6 +160,55 @@ const clientPlaceholder: DashboardData = {
       description: '募集要項の書き方テンプレートと失敗しないチェックリストを提供。',
     },
   ],
+  ctaVariants: {
+    default: {
+      experimentKey: 'client-default-2025q4',
+      primary: {
+        label: '案件を掲載する',
+        href: '/projects/create',
+      },
+      secondary: {
+        label: 'ヘルプセンターを見る',
+        href: '/support',
+      },
+    },
+  },
+}
+
+const workerCtaVariants: DashboardHeroCTAVariants = {
+  default: {
+    experimentKey: 'worker-default-2025q4',
+    primary: {
+      label: '案件を探す',
+      href: '/projects',
+    },
+    secondary: {
+      label: '案件を登録する',
+      href: '/projects/new',
+    },
+  },
+  holiday: {
+    experimentKey: 'worker-holiday-2025q4',
+    primary: {
+      label: '軽めのタスクを始める',
+      href: '/tasks?filter=quick-win',
+    },
+    secondary: {
+      label: 'おすすめ案件を見る',
+      href: '/projects?sort=recommended',
+    },
+  },
+  firstVisit: {
+    experimentKey: 'worker-first-visit-2025q4',
+    primary: {
+      label: 'プロフィールを完成させる',
+      href: '/profile/setup',
+    },
+    secondary: {
+      label: '活用ハンドブックを読む',
+      href: '/guides/get-started',
+    },
+  },
 }
 
 export function getMockDashboardData(mode: DashboardMode): DashboardData {
@@ -156,5 +223,6 @@ export function getMockDashboardData(mode: DashboardMode): DashboardData {
     recommendations: workerRecommendations,
     savedProjects,
     supportResources,
+    ctaVariants: workerCtaVariants,
   }
 }
