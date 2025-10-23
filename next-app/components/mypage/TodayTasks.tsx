@@ -5,10 +5,64 @@ import { DashboardTask } from '@/types/dashboard'
 interface TodayTasksProps {
   tasks: DashboardTask[]
   emptyStateReminderHref?: string
+  isLoading?: boolean
+  isError?: boolean
 }
 
-export function TodayTasks({ tasks, emptyStateReminderHref }: TodayTasksProps) {
+export function TodayTasks({
+  tasks,
+  emptyStateReminderHref,
+  isLoading = false,
+  isError = false,
+}: TodayTasksProps) {
   const headingId = 'mypage-today-tasks'
+
+  if (isError) {
+    return (
+      <section
+        className="bg-white rounded-3xl border border-red-200 px-6 py-10 text-center shadow-sm"
+        aria-labelledby={headingId}
+        role="alert"
+      >
+        <h2 id={headingId} className="text-lg font-semibold text-red-600">
+          タスクを読み込めませんでした
+        </h2>
+        <p className="mt-2 text-sm text-red-500">時間を置いて再度お試しください。</p>
+      </section>
+    )
+  }
+
+  if (isLoading) {
+    return (
+      <section
+        className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6"
+        aria-labelledby={headingId}
+        role="region"
+      >
+        <div className="flex items-center justify-between mb-4">
+          <h2 id={headingId} className="text-lg font-semibold text-gray-900">
+            今日のタスク
+          </h2>
+          <span className="h-4 w-24 rounded bg-gray-200 animate-pulse" aria-hidden />
+        </div>
+        <div className="space-y-4">
+          {Array.from({ length: 3 }).map((_, index) => (
+            <div
+              key={index}
+              className="flex flex-col gap-3 rounded-2xl border border-gray-100 bg-gray-50/80 p-4 animate-pulse"
+            >
+              <div className="flex items-center gap-3">
+                <span className="h-6 w-20 rounded-full bg-gray-200" aria-hidden />
+                <span className="h-4 w-32 rounded bg-gray-200" aria-hidden />
+              </div>
+              <span className="h-5 w-1/2 rounded bg-gray-200" aria-hidden />
+              <span className="h-4 w-2/3 rounded bg-gray-100" aria-hidden />
+            </div>
+          ))}
+        </div>
+      </section>
+    )
+  }
 
   if (tasks.length === 0) {
     return (

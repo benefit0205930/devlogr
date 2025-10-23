@@ -46,7 +46,7 @@ export default function Header() {
                   案件一覧
                 </Button>
               </Link>
-              <Link href="/projects/new">
+              <Link href="/projects/create">
                 <Button variant="blackOutline" size="sm">
                   案件を投稿
                 </Button>
@@ -106,7 +106,7 @@ export default function Header() {
                   案件一覧
                 </Button>
               </Link>
-              <Link href="/projects/new">
+              <Link href="/projects/create">
                 <Button variant="ghost" fullWidth className="justify-start">
                   案件を投稿
                 </Button>

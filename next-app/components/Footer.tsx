@@ -19,7 +19,7 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/projects/new" className="text-sm text-gray-600 hover:text-gray-900">
+                <Link href="/projects/create" className="text-sm text-gray-600 hover:text-gray-900">
                   案件を投稿
                 </Link>
               </li>

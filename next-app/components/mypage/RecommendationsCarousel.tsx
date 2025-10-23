@@ -7,6 +7,8 @@ interface RecommendationsCarouselProps {
   items: DashboardRecommendation[]
   emptyMessage?: string
   compact?: boolean
+  isLoading?: boolean
+  isError?: boolean
 }
 
 export function RecommendationsCarousel({
@@ -14,6 +16,8 @@ export function RecommendationsCarousel({
   items,
   emptyMessage,
   compact = false,
+  isLoading = false,
+  isError = false,
 }: RecommendationsCarouselProps) {
   const headingId = useId()
 
@@ -27,11 +31,36 @@ export function RecommendationsCarousel({
         <h2 id={headingId} className="text-lg font-semibold text-gray-900">
           {title}
         </h2>
-        <Link href="/projects" className="text-sm text-blue-600 hover:text-blue-700">
-          すべての案件を見る
-        </Link>
+        {isLoading ? (
+          <span className="h-4 w-24 rounded bg-gray-200 animate-pulse" aria-hidden />
+        ) : (
+          <Link href="/projects" className="text-sm text-blue-600 hover:text-blue-700">
+            すべての案件を見る
+          </Link>
+        )}
       </div>
-      {items.length === 0 ? (
+      {isError ? (
+        <div className="rounded-2xl border border-red-200 bg-red-50 py-10 text-center text-sm text-red-600">
+          案件情報を取得できませんでした。
+        </div>
+      ) : isLoading ? (
+        <div className="flex gap-4 overflow-hidden">
+          {Array.from({ length: 3 }).map((_, index) => (
+            <div
+              key={index}
+              className="min-w-[240px] sm:min-w-[280px] rounded-2xl border border-gray-100 bg-gray-50 p-5 animate-pulse"
+            >
+              <span className="mb-3 block h-5 w-3/4 rounded bg-gray-200" aria-hidden />
+              <span className="mb-2 block h-4 w-full rounded bg-gray-100" aria-hidden />
+              <span className="mb-6 block h-4 w-4/5 rounded bg-gray-100" aria-hidden />
+              <div className="mt-auto space-y-2">
+                <span className="block h-4 w-1/2 rounded bg-gray-100" aria-hidden />
+                <span className="block h-4 w-1/3 rounded bg-gray-100" aria-hidden />
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : items.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-gray-200 bg-gray-50 py-10 text-center text-sm text-gray-500">
           {emptyMessage ?? '表示する案件はまだありません。'}
         </div>
