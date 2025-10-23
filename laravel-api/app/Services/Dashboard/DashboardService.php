@@ -58,7 +58,7 @@ class DashboardService
 
         $tasks = $projects->map(function (Project $project) {
             $deadline = $project->deadline;
-            $dueDate = $deadline?->toISOString();
+            $dueDate = $deadline?->toIso8601String();
             $daysUntil = $deadline ? now()->diffInDays($deadline, false) : null;
 
             return [
@@ -134,7 +134,7 @@ class DashboardService
             'title' => $project->title,
             'summary' => Str::limit($project->description, 140),
             'budgetRange' => '¥' . $budgetMin . '〜¥' . $budgetMax,
-            'dueDate' => $project->deadline?->toISOString(),
+            'dueDate' => $project->deadline?->toIso8601String(),
             'skills' => $project->technologies ?? [],
             'href' => '/projects/' . $project->id,
             'isNew' => $isRecommendation && $project->created_at?->greaterThan(now()->subDays(3)),
