@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\ProjectController;
 use App\Http\Controllers\Api\BookmarkController;
 use Illuminate\Support\Facades\Route;
@@ -15,6 +16,14 @@ Route::middleware('auth:sanctum')->group(function () {
     // ブックマーク
     Route::post('/projects/{project}/bookmark', [BookmarkController::class, 'toggle']);
     Route::get('/bookmarks', [BookmarkController::class, 'index']);
+
+    Route::prefix('dashboard')->group(function () {
+        Route::get('/summary', [DashboardController::class, 'summary']);
+        Route::get('/tasks', [DashboardController::class, 'tasks']);
+        Route::get('/recommendations', [DashboardController::class, 'recommendations']);
+        Route::get('/saved-projects', [DashboardController::class, 'savedProjects']);
+        Route::get('/resources', [DashboardController::class, 'resources']);
+    });
 });
 
 Route::get('/projects', [ProjectController::class, 'index']);

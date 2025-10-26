@@ -184,7 +184,7 @@ const workerCtaVariants: DashboardHeroCTAVariants = {
     },
     secondary: {
       label: '案件を登録する',
-      href: '/projects/new',
+      href: '/projects/create',
     },
   },
   holiday: {

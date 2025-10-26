@@ -6,10 +6,12 @@ import {
   DashboardHeroVariant,
   DashboardMode,
 } from '@/types/dashboard'
+import { fetchDashboardData } from '@/lib/dashboard'
 import { getMockDashboardData } from '@/lib/mocks/mypage'
 
 interface UseUserDashboardOptions {
   mode: DashboardMode
+  reloadKey?: number
 }
 
 const DEFAULT_VARIANT: DashboardHeroVariant = 'default'
@@ -22,11 +24,11 @@ const FALLBACK_CTAS: DashboardHeroCTASet = {
   },
   secondary: {
     label: '案件を登録する',
-    href: '/projects/new',
+    href: '/projects/create',
   },
 }
 
-export const useUserDashboard = ({ mode }: UseUserDashboardOptions) => {
+export const useUserDashboard = ({ mode, reloadKey = 0 }: UseUserDashboardOptions) => {
   const [data, setData] = useState<DashboardData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -39,8 +41,18 @@ export const useUserDashboard = ({ mode }: UseUserDashboardOptions) => {
         setLoading(true)
         setError(null)
 
-        // 将来的にAPIへ差し替える想定。Phase1ではモックデータを返す。
-        const response = await Promise.resolve(getMockDashboardData(mode))
+        if (mode === 'client') {
+          const mock = getMockDashboardData(mode)
+          const computedCtas = resolveHeroCtas(mock.ctaVariants, mock.summary.variant)
+
+          if (active) {
+            setData(mock)
+            setHeroCtas(computedCtas)
+          }
+          return
+        }
+
+        const response = await fetchDashboardData()
         const computedCtas = resolveHeroCtas(response.ctaVariants, response.summary.variant)
 
         if (active) {
@@ -66,7 +78,7 @@ export const useUserDashboard = ({ mode }: UseUserDashboardOptions) => {
     return () => {
       active = false
     }
-  }, [mode])
+  }, [mode, reloadKey])
 
   return { data, loading, error, heroCtas }
 }
