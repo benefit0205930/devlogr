@@ -39,8 +39,7 @@ php artisan migrate
   - コンポーネント: `components/mypage/`
   - フック: `hooks/useModeSwitcher.ts`, `hooks/useUserDashboard.ts`
   - 型定義: `types/dashboard.ts`
-  - モックデータ: `lib/mocks/mypage.ts`
-- **注意**: API接続前のため、現在はモックデータを表示しています
+- **注意**: 2025-10-25 時点でワーカー/クライアント両モードが API 連携済み
 
 ## 新機能メモ（2025-10-21）
 - **CTA実験対応**: `HeroSummary` のボタン文言/リンクを `useUserDashboard` の `ctaVariants` で切り替え可能にし、祝日メッセージ用バリアントを追加。
@@ -57,3 +56,9 @@ php artisan migrate
   1. `php artisan migrate --seed` 等でユーザーを準備し、Sanctum 認証でログイン (`/api/login`)。
   2. ブラウザで `http://localhost:3000/mypage` にアクセスすると、バックエンドのダッシュボード API からデータを取得します（未認証の場合はエラーアラートが表示されます）。
 - **テスト補足**: `php artisan test` で `DashboardController` の Feature テストが走り、APIガードとレスポンス構造を検証します。
+
+## 新機能メモ（2025-10-25）
+- **クライアントモード API 連携**: `DashboardService` が `mode` クエリに応じてクライアント向けサマリー/タスク/案件データを返却。応募件数やレビュー待ち件数を集計し、CTAバリアント・サポートリソースもクライアント用に出し分け。
+- **フロント連携**: `/mypage` の ModeSwitcher を有効化し、`fetchDashboardData` がクライアントモードでも API 呼び出しを行うよう統一。カルーセル文言と空状態メッセージをモードに応じて切り替え。
+- **スタブ削除**: 旧 `next-app/lib/mocks/mypage.ts` を削除し、不要なモック依存を排除。
+- **利用メモ**: フロントエンドは `?mode=client` 付きで API を呼び出すため、ブラウザでモードを切り替えると即座にクライアントダッシュボードへ遷移します。

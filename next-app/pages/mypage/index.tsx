@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useMemo } from 'react'
 import Head from 'next/head'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
@@ -11,14 +11,41 @@ import { useModeSwitcher } from '@/hooks/useModeSwitcher'
 import { useUserDashboard } from '@/hooks/useUserDashboard'
 
 export default function MyPage() {
-  const { mode, setMode, isPreviewMode } = useModeSwitcher()
+  const { mode, setMode } = useModeSwitcher()
   const [reloadKey, setReloadKey] = useState(0)
   const { data, loading, error, heroCtas } = useUserDashboard({ mode, reloadKey })
   const mainSectionId = 'mypage-main'
   const emptyStateReminderHref =
-    data?.todayTasks.find((task) => task.reminderLink)?.reminderLink ?? '/notifications/reminders'
+    data?.todayTasks.find((task) => task.reminderLink)?.reminderLink ??
+    (mode === 'client' ? '/projects/create' : '/notifications/reminders')
   const hasError = Boolean(error)
   const showSpinner = loading && !data
+
+  const {
+    recommendationsTitle,
+    recommendationsEmptyMessage,
+    savedProjectsTitle,
+    savedProjectsEmptyMessage,
+  } = useMemo(() => {
+    if (mode === 'client') {
+      return {
+        recommendationsTitle: '募集中の案件ハイライト',
+        recommendationsEmptyMessage:
+          '現在募集中の案件はありません。新しい案件を公開して応募を集めましょう。',
+        savedProjectsTitle: '進行中の案件',
+        savedProjectsEmptyMessage:
+          '進行中の案件はまだありません。採用が決まり次第ここに表示されます。',
+      }
+    }
+
+    return {
+      recommendationsTitle: 'あなたへのおすすめ案件',
+      recommendationsEmptyMessage:
+        'おすすめ案件は現在ありません。プロフィールを更新するとよりマッチした案件が表示されます。',
+      savedProjectsTitle: '保存した案件',
+      savedProjectsEmptyMessage: '保存した案件はまだありません。気になる案件を保存しておきましょ。',
+    }
+  }, [mode])
 
   const handleRetry = useCallback(() => {
     setReloadKey((current) => current + 1)
@@ -40,11 +67,6 @@ export default function MyPage() {
         <div className="border-b border-gray-200 bg-white/80 backdrop-blur">
           <div className="mx-auto max-w-6xl px-4 py-6">
             <ModeSwitcher mode={mode} onChange={setMode} />
-            {isPreviewMode && (
-              <p className="mt-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-700">
-                クライアントモードは現在準備中です。フェーズ2での提供を予定しています。
-              </p>
-            )}
           </div>
         </div>
 
@@ -81,16 +103,16 @@ export default function MyPage() {
                 isError={hasError}
               />
               <RecommendationsCarousel
-                title="あなたへのおすすめ案件"
+                title={recommendationsTitle}
                 items={data.recommendations}
-                emptyMessage="おすすめ案件は現在ありません。プロフィールを更新するとよりマッチした案件が表示されます。"
+                emptyMessage={recommendationsEmptyMessage}
                 isLoading={loading}
                 isError={hasError}
               />
               <RecommendationsCarousel
-                title="保存した案件"
+                title={savedProjectsTitle}
                 items={data.savedProjects}
-                emptyMessage="保存した案件はまだありません。気になる案件を保存しておきましょ。"
+                emptyMessage={savedProjectsEmptyMessage}
                 compact
                 isLoading={loading}
                 isError={hasError}

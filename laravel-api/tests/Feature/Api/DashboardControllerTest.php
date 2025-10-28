@@ -128,4 +128,74 @@ class DashboardControllerTest extends TestCase
                 ],
             ]);
     }
+
+    public function test_client_summary_returns_expected_metrics(): void
+    {
+        $user = User::factory()->create(['name' => 'Client User']);
+        Project::factory()->for($user)->open()->create([
+            'application_count' => 4,
+        ]);
+        Project::factory()->for($user)->inProgress()->create([
+            'application_count' => 2,
+        ]);
+        Project::factory()->for($user)->completed()->create();
+
+        Sanctum::actingAs($user);
+
+        $this->getJson('/api/dashboard/summary?mode=client')
+            ->assertOk()
+            ->assertJsonFragment([
+                'mode' => 'client',
+            ])
+            ->assertJsonPath('data.summary.openProjects', 1)
+            ->assertJsonPath('data.summary.inProgressProjects', 1)
+            ->assertJsonPath('data.summary.pendingReviews', 1)
+            ->assertJsonPath('data.summary.unreadMessages', 6);
+    }
+
+    public function test_client_tasks_prioritize_open_projects(): void
+    {
+        $user = User::factory()->create();
+        $urgentProject = Project::factory()->for($user)->open()->create([
+            'deadline' => now()->addDay(),
+            'application_count' => 5,
+        ]);
+        Project::factory()->for($user)->completed()->create();
+
+        Sanctum::actingAs($user);
+
+        $response = $this->getJson('/api/dashboard/tasks?mode=client')->assertOk();
+
+        $titles = collect($response->json('data'))->pluck('title');
+
+        $this->assertTrue(
+            $titles->contains('「' . $urgentProject->title . '」の応募者を確認する')
+        );
+    }
+
+    public function test_client_recommendations_return_owned_projects(): void
+    {
+        $user = User::factory()->create();
+        $project = Project::factory()->for($user)->open()->create();
+        Project::factory()->open()->create();
+
+        Sanctum::actingAs($user);
+
+        $response = $this->getJson('/api/dashboard/recommendations?mode=client')->assertOk();
+        $ids = collect($response->json('data'))->pluck('id');
+
+        $this->assertTrue($ids->contains((string) $project->id));
+    }
+
+    public function test_client_support_resources_returns_custom_links(): void
+    {
+        $user = User::factory()->create();
+        Sanctum::actingAs($user);
+
+        $this->getJson('/api/dashboard/resources?mode=client')
+            ->assertOk()
+            ->assertJsonFragment([
+                'category' => 'guide',
+            ]);
+    }
 }

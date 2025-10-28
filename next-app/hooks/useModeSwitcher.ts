@@ -33,6 +33,5 @@ export const useModeSwitcher = () => {
   return {
     mode,
     setMode,
-    isPreviewMode: mode === 'client',
   }
 }
