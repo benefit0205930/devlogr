@@ -7,7 +7,6 @@ import {
   DashboardMode,
 } from '@/types/dashboard'
 import { fetchDashboardData } from '@/lib/dashboard'
-import { getMockDashboardData } from '@/lib/mocks/mypage'
 
 interface UseUserDashboardOptions {
   mode: DashboardMode
@@ -41,18 +40,7 @@ export const useUserDashboard = ({ mode, reloadKey = 0 }: UseUserDashboardOption
         setLoading(true)
         setError(null)
 
-        if (mode === 'client') {
-          const mock = getMockDashboardData(mode)
-          const computedCtas = resolveHeroCtas(mock.ctaVariants, mock.summary.variant)
-
-          if (active) {
-            setData(mock)
-            setHeroCtas(computedCtas)
-          }
-          return
-        }
-
-        const response = await fetchDashboardData()
+        const response = await fetchDashboardData(mode)
         const computedCtas = resolveHeroCtas(response.ctaVariants, response.summary.variant)
 
         if (active) {

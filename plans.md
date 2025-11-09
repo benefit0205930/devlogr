@@ -50,19 +50,17 @@
    - `/mypage` へのリンクをヘッダーナビに仮追加。フェーズ完了後に実装状況へリンク。
 
 ## データ戦略（Phase 1）
-- API準備前はスタブJSONを `lib/mocks/mypage.ts` に配置し、SW用のフェッチ層から取得。
+- API準備前はスタブJSONを `lib/mocks/mypage.ts` に配置し、SW用のフェッチ層から取得。（2025-10-25 時点で削除済み）
 - 後続フェーズでLaravel側 `ProjectController` から関連データを返すためのインターフェースを検討。
 
 ## テスト・検証
 - フェーズ1では `npm run lint` と主要コンポーネントの Story/Playground で見た目確認。  
 - 将来的にE2E導入時は `playwright` でモード切り替えとタスク表示を回す前提でID付与。
 
-## 未決事項 / 次フェーズ課題
-- **クライアントモードAPI実装**（Phase 3優先度: 高）
-  - Laravel側: DashboardService にクライアントモード用ロジック追加
-  - 投稿案件一覧、応募者管理、メッセージ統計、レビュー待ち件数などを提供
-  - Next.js側: useUserDashboard の `mode === 'client'` 分岐をAPI切り替え
-  - ModeSwitcher の disabled 解除、クライアント専用UIコンポーネント作成
+- **クライアントモード体験強化**（Phase 3優先度: 中）
+  - 応募ステータス別フィルタリングとメッセージ統計の詳細化
+  - ModeSwitcher 下にガイダンス／チュートリアルリンクを追加
+  - クライアント向け Playwright シナリオの整備
 - タスクデータの優先度判定ロジック強化（メッセージ未読数・レビュー要求の統合）
 - レコメンドアルゴリズム改善（ユーザースキルセットとのマッチング精度向上）
 - 広告・マーケ枠の扱い（配置とトラッキング要件）
@@ -87,7 +85,7 @@
 ## 進捗メモ（2025-10-23）
 - [x] Laravel 側で `/api/dashboard/*` を実装し、Summary/Tasks/Recommendations/Saved Projects/Resources を返却。`DashboardService` で派生メッセージとCTAバリアントを集約。
 - [x] `ProjectFactory`・`BookmarkFactory` を整備し、`DashboardController` Featureテストで認証ガードとレスポンス形をカバー。
-- [x] Next.js 側 `lib/dashboard.ts` と `useUserDashboard` を API 連携仕様へ差し替え、モックはクライアントモードのみ残存。
+- [x] Next.js 側 `lib/dashboard.ts` と `useUserDashboard` を API 連携仕様へ差し替え（当初はクライアントモードのみモック継続、2025-10-25 に完全API化）。
 - [x] `HeroSummary` / `TodayTasks` / `RecommendationsCarousel` にローディングスケルトンとエラー表示を追加し、フェッチ中でもUI整合性を維持。
 - [ ] `/mypage` への未認証アクセス時のリダイレクトは未実装。Phase 2 後半で middleware 追加を検討。
 
@@ -99,7 +97,7 @@
 - [x] **レコメンドの文脈情報追加**（2025-10-21 完了）カルーセルカードへ稼働時間・報酬レンジチップを表示し、末尾に「もっと見る」カードを配置。
 
 ### B. データ層タスク
-- [x] `lib/mocks/mypage.ts` を拡張し、`ctaVariants`・`workload`・`rewardRange`・`priorityLabel`・`reminderLink` をスタブデータに追加。
+- [x] `lib/mocks/mypage.ts` を拡張し、`ctaVariants`・`workload`・`rewardRange`・`priorityLabel`・`reminderLink` をスタブデータに追加。（2025-10-25 に廃止）
 - [x] `hooks/useUserDashboard.ts` で CTA 定義を抽出し、variant 切り替えロジックを実装（将来の API マッピング TODO コメント追記済み）。
 
 ### C. アクセシビリティ / QA
@@ -168,16 +166,23 @@
 - [x] Next.js側 lib/dashboard.ts 作成（API client層）
   - Promise.all で5つのAPIを並列リクエスト最適化
   - 型安全なレスポンス処理
-- [x] useUserDashboard をモックからAPI切り替え（ワーカーモードのみ）
-  - クライアントモードは引き続きモック使用
+- [x] useUserDashboard をモックからAPI切り替え（クライアントモードは2025-10-25に対応完了）
   - `reloadKey` でリトライ機能追加
 - [x] MyPageコンポーネント強化
   - ローディング状態改善（`showSpinner`）
   - エラー時のリトライ機能実装
   - `isLoading`/`isError` props追加（将来の部分更新対応）
 - [x] ESLint/TypeScript型チェック全パス
-- [ ] **クライアントモードAPI連携は未実装**（モック使用継続、Phase 3で対応予定）
-  - 現状: `useUserDashboard` の `mode === 'client'` 分岐でモックデータ返却
-  - 必要な実装: DashboardService にクライアントモード用ロジック追加、投稿案件一覧・応募者管理・メッセージ統計など
+- [x] **クライアントモードAPI連携を実装**
+  - DashboardService でクライアント向けサマリー/タスク/案件ロジックを追加
+  - Next.js から `mode` クエリを付与してAPI呼び出しを統一
 - [ ] 認証ガード（/mypageへのサーバーサイドリダイレクト）未実装
 - [ ] Playwright E2Eテスト未実装（Phase 3検討）
+
+## 進捗メモ（2025-10-25）
+- [x] DashboardService にクライアントモード分岐を追加し、応募数集計・レビュー待ち件数・応募者確認タスクを提供。
+- [x] `/api/dashboard/*` 各エンドポイントで `mode` クエリを受け付けるよう `DashboardController` を更新。
+- [x] `config/dashboard.php` にクライアント向け CTA バリアントとサポートリソースを登録。
+- [x] `DashboardControllerTest` にクライアントモードのサマリー/タスク/案件/リソース検証ケースを追加。
+- [x] フロントエンド側で ModeSwitcher を有効化し、`fetchDashboardData` がモード毎に API を呼び出すよう統一。カルーセル文言をモード別に出し分け。
+- [x] 旧スタブデータ（`next-app/lib/mocks/mypage.ts`）を削除し、`plans.md`・`README.md` を最新仕様へ更新。

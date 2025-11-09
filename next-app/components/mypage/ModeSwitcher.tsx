@@ -10,7 +10,6 @@ const options: Array<{
   value: DashboardMode
   label: string
   description: string
-  disabled?: boolean
 }> = [
   {
     value: 'worker',
@@ -20,8 +19,7 @@ const options: Array<{
   {
     value: 'client',
     label: 'クライアントモード',
-    description: '案件投稿・進行管理（準備中）',
-    disabled: true,
+    description: '案件投稿・応募対応・レビュー管理',
   },
 ]
 
@@ -39,22 +37,17 @@ export function ModeSwitcher({ mode, onChange }: ModeSwitcherProps) {
             <button
               key={option.value}
               type="button"
-              disabled={option.disabled}
               onClick={() => {
-                if (!option.disabled) {
-                  onChange(option.value)
-                }
+                onChange(option.value)
               }}
               className={clsx(
                 'px-4 py-2 rounded-lg text-sm font-medium transition-all flex flex-col items-start text-left',
-                option.disabled && 'opacity-50 cursor-not-allowed',
                 mode === option.value
                   ? 'bg-white shadow text-gray-900'
                   : 'text-gray-500 hover:text-gray-900'
               )}
               role="radio"
               aria-checked={mode === option.value}
-              aria-disabled={option.disabled}
               tabIndex={mode === option.value ? 0 : -1}
             >
               <div className="leading-tight">{option.label}</div>

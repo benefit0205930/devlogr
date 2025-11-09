@@ -10,6 +10,7 @@ use App\Http\Resources\Dashboard\SummaryResource;
 use App\Http\Resources\Dashboard\TaskResource;
 use App\Services\Dashboard\DashboardService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class DashboardController extends Controller
 {
@@ -19,36 +20,63 @@ class DashboardController extends Controller
 
     public function summary(Request $request): SummaryResource
     {
+        $mode = $this->resolveMode($request);
+
         return new SummaryResource(
-            $this->dashboardService->getSummary($request->user())
+            $this->dashboardService->getSummary($request->user(), $mode)
         );
     }
 
     public function tasks(Request $request)
     {
+        $mode = $this->resolveMode($request);
+
         return TaskResource::collection(
-            $this->dashboardService->getTodayTasks($request->user())
+            $this->dashboardService->getTodayTasks($request->user(), $mode)
         );
     }
 
     public function recommendations(Request $request)
     {
+        $mode = $this->resolveMode($request);
+
         return RecommendationResource::collection(
-            $this->dashboardService->getRecommendations($request->user())
+            $this->dashboardService->getRecommendations($request->user(), $mode)
         );
     }
 
     public function savedProjects(Request $request)
     {
+        $mode = $this->resolveMode($request);
+
         return SavedProjectResource::collection(
-            $this->dashboardService->getSavedProjects($request->user())
+            $this->dashboardService->getSavedProjects($request->user(), $mode)
         );
     }
 
-    public function resources()
+    public function resources(Request $request)
     {
+        $mode = $this->resolveMode($request);
+
         return ResourceLinkResource::collection(
-            $this->dashboardService->getSupportResources()
+            $this->dashboardService->getSupportResources($mode)
         );
+    }
+
+    private function resolveMode(Request $request): string
+    {
+        $mode = $request->query('mode', 'worker');
+
+        if (!in_array($mode, ['worker', 'client'], true)) {
+            Log::warning('Invalid dashboard mode requested', [
+                'mode' => $mode,
+                'user_id' => $request->user()?->id,
+                'ip' => $request->ip(),
+            ]);
+
+            return 'worker';
+        }
+
+        return $mode;
     }
 }
