@@ -10,6 +10,7 @@ use App\Http\Resources\Dashboard\SummaryResource;
 use App\Http\Resources\Dashboard\TaskResource;
 use App\Services\Dashboard\DashboardService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class DashboardController extends Controller
 {
@@ -66,6 +67,16 @@ class DashboardController extends Controller
     {
         $mode = $request->query('mode', 'worker');
 
-        return in_array($mode, ['worker', 'client'], true) ? $mode : 'worker';
+        if (!in_array($mode, ['worker', 'client'], true)) {
+            Log::warning('Invalid dashboard mode requested', [
+                'mode' => $mode,
+                'user_id' => $request->user()?->id,
+                'ip' => $request->ip(),
+            ]);
+
+            return 'worker';
+        }
+
+        return $mode;
     }
 }

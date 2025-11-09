@@ -11,6 +11,11 @@ use Illuminate\Support\Str;
 
 class DashboardService
 {
+    /**
+     * 新規案件とみなす日数の閾値（作成日から何日以内を新規とするか）
+     */
+    private const NEW_PROJECT_DAYS_THRESHOLD = 3;
+
     public function getSummary(User $user, string $mode): array
     {
         return $mode === 'client'
@@ -57,7 +62,7 @@ class DashboardService
             'dueDate' => $project->deadline?->toIso8601String(),
             'skills' => $project->technologies ?? [],
             'href' => '/projects/' . $project->id,
-            'isNew' => $isRecommendation && $project->created_at?->greaterThan(now()->subDays(3)),
+            'isNew' => $isRecommendation && $project->created_at?->greaterThan(now()->subDays(self::NEW_PROJECT_DAYS_THRESHOLD)),
             'workload' => $project->estimated_duration ?? '相談して決定',
             'rewardRange' => '月額目安: ¥' . $budgetMin . '〜¥' . $budgetMax,
         ];
@@ -84,28 +89,21 @@ class DashboardService
             'dueDate' => $deadline,
             'skills' => $project->required_skills ?? [],
             'href' => '/client/projects/' . $project->id,
-            'isNew' => $project->created_at?->greaterThan(now()->subDays(3)),
+            'isNew' => $project->created_at?->greaterThan(now()->subDays(self::NEW_PROJECT_DAYS_THRESHOLD)),
             'workload' => $project->estimated_duration ?? '相談して決定',
         ];
     }
 
     protected function buildClientSummary(User $user): array
     {
-        $openProjects = $this->projectsForUser($user)
-            ->where('status', 'open')
-            ->count();
+        $metrics = $this->buildSummaryMetrics($user);
+        $openProjects = $metrics['openProjects'];
+        $inProgressProjects = $metrics['inProgressProjects'];
+        $completedAwaitingReview = $metrics['completedProjects'];
 
-        $inProgressProjects = $this->projectsForUser($user)
-            ->where('status', 'in_progress')
-            ->count();
-
-        $completedAwaitingReview = $this->projectsForUser($user)
-            ->where('status', 'completed')
-            ->count();
-
-        $unreadMessages = $this->projectsForUser($user)
+        $unreadMessages = (int) ($this->projectsForUser($user)
             ->whereIn('status', ['open', 'in_progress'])
-            ->sum('application_count');
+            ->sum('application_count') ?? 0);
 
         $variant = $this->resolveClientVariant($openProjects, $inProgressProjects, $completedAwaitingReview);
 
@@ -130,17 +128,10 @@ class DashboardService
 
     protected function buildWorkerSummary(User $user): array
     {
-        $openProjects = $this->projectsForUser($user)
-            ->where('status', 'open')
-            ->count();
-
-        $inProgressProjects = $this->projectsForUser($user)
-            ->where('status', 'in_progress')
-            ->count();
-
-        $completedAwaitingReview = $this->projectsForUser($user)
-            ->where('status', 'completed')
-            ->count();
+        $metrics = $this->buildSummaryMetrics($user);
+        $openProjects = $metrics['openProjects'];
+        $inProgressProjects = $metrics['inProgressProjects'];
+        $completedAwaitingReview = $metrics['completedProjects'];
 
         $variant = $this->resolveVariant();
 
@@ -289,6 +280,7 @@ class DashboardService
 
     protected function buildWorkerRecommendations(User $user): Collection
     {
+        // N+1クエリを防ぐため、リレーションを事前にロード
         $bookmarkedIds = $user->bookmarkedProjects()->pluck('projects.id')->all();
 
         return Project::query()
@@ -325,6 +317,27 @@ class DashboardService
     protected function projectsForUser(User $user): Builder
     {
         return Project::query()->where('user_id', $user->id);
+    }
+
+    /**
+     * サマリー用のメトリクス（公開中・進行中・完了案件数）を取得
+     *
+     * @param User $user
+     * @return array{openProjects: int, inProgressProjects: int, completedProjects: int}
+     */
+    protected function buildSummaryMetrics(User $user): array
+    {
+        return [
+            'openProjects' => $this->projectsForUser($user)
+                ->where('status', 'open')
+                ->count(),
+            'inProgressProjects' => $this->projectsForUser($user)
+                ->where('status', 'in_progress')
+                ->count(),
+            'completedProjects' => $this->projectsForUser($user)
+                ->where('status', 'completed')
+                ->count(),
+        ];
     }
 
     protected function resolveClientVariant(int $openProjects, int $inProgressProjects, int $completedAwaitingReview): string

@@ -198,4 +198,61 @@ class DashboardControllerTest extends TestCase
                 'category' => 'guide',
             ]);
     }
+
+    public function test_invalid_mode_falls_back_to_worker_mode(): void
+    {
+        $user = User::factory()->create();
+        Sanctum::actingAs($user);
+
+        // 空文字列の場合
+        $this->getJson('/api/dashboard/summary?mode=')
+            ->assertOk()
+            ->assertJsonFragment([
+                'mode' => 'worker',
+            ]);
+
+        // 無効な値の場合
+        $this->getJson('/api/dashboard/summary?mode=invalid')
+            ->assertOk()
+            ->assertJsonFragment([
+                'mode' => 'worker',
+            ]);
+
+        // 大文字の場合（小文字に正規化されない）
+        $this->getJson('/api/dashboard/summary?mode=CLIENT')
+            ->assertOk()
+            ->assertJsonFragment([
+                'mode' => 'worker',
+            ]);
+    }
+
+    public function test_client_mode_with_no_projects_returns_empty_state(): void
+    {
+        $user = User::factory()->create();
+        Sanctum::actingAs($user);
+
+        $response = $this->getJson('/api/dashboard/summary?mode=client')
+            ->assertOk()
+            ->assertJsonFragment([
+                'mode' => 'client',
+            ]);
+
+        $response->assertJsonPath('data.summary.openProjects', 0)
+            ->assertJsonPath('data.summary.inProgressProjects', 0)
+            ->assertJsonPath('data.summary.pendingReviews', 0)
+            ->assertJsonPath('data.summary.unreadMessages', 0)
+            ->assertJsonPath('data.summary.variant', 'firstVisit');
+    }
+
+    public function test_client_tasks_returns_empty_state_when_no_projects(): void
+    {
+        $user = User::factory()->create();
+        Sanctum::actingAs($user);
+
+        $response = $this->getJson('/api/dashboard/tasks?mode=client')->assertOk();
+
+        $tasks = collect($response->json('data'));
+        $this->assertCount(1, $tasks);
+        $this->assertEquals('client-create-project', $tasks->first()['id']);
+    }
 }

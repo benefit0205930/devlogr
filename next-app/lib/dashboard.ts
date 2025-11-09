@@ -70,21 +70,26 @@ export const getDashboardSupportResources = async (
 }
 
 export const fetchDashboardData = async (mode: DashboardMode): Promise<DashboardData> => {
-  const [summary, tasks, recommendations, savedProjects, supportResources] = await Promise.all([
-    getDashboardSummary(mode),
-    getDashboardTasks(mode),
-    getDashboardRecommendations(mode),
-    getDashboardSavedProjects(mode),
-    getDashboardSupportResources(mode),
-  ])
+  try {
+    const [summary, tasks, recommendations, savedProjects, supportResources] = await Promise.all([
+      getDashboardSummary(mode),
+      getDashboardTasks(mode),
+      getDashboardRecommendations(mode),
+      getDashboardSavedProjects(mode),
+      getDashboardSupportResources(mode),
+    ])
 
-  return {
-    mode: summary.mode,
-    summary: summary.summary,
-    todayTasks: tasks,
-    recommendations,
-    savedProjects,
-    supportResources,
-    ctaVariants: summary.ctaVariants ?? {},
+    return {
+      mode: summary.mode,
+      summary: summary.summary,
+      todayTasks: tasks,
+      recommendations,
+      savedProjects,
+      supportResources,
+      ctaVariants: summary.ctaVariants ?? {},
+    }
+  } catch (error) {
+    console.error('Failed to fetch dashboard data:', error)
+    throw error
   }
 }
