@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\DashboardMode;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Dashboard\RecommendationResource;
 use App\Http\Resources\Dashboard\ResourceLinkResource;
@@ -63,18 +64,19 @@ class DashboardController extends Controller
         );
     }
 
-    private function resolveMode(Request $request): string
+    private function resolveMode(Request $request): DashboardMode
     {
-        $mode = $request->query('mode', 'worker');
+        $rawMode = $request->query('mode');
+        $mode = DashboardMode::fromString(is_string($rawMode) ? $rawMode : null);
+        $isInvalidString = is_string($rawMode) && $mode->value !== $rawMode;
+        $isInvalidType = !is_string($rawMode) && $rawMode !== null;
 
-        if (!in_array($mode, ['worker', 'client'], true)) {
+        if ($isInvalidString || $isInvalidType) {
             Log::warning('Invalid dashboard mode requested', [
-                'mode' => $mode,
+                'mode' => $rawMode,
                 'user_id' => $request->user()?->id,
                 'ip' => $request->ip(),
             ]);
-
-            return 'worker';
         }
 
         return $mode;

@@ -2,6 +2,7 @@
 
 namespace App\Services\Dashboard;
 
+use App\Enums\DashboardMode;
 use App\Models\Bookmark;
 use App\Models\Project;
 use App\Models\User;
@@ -16,37 +17,37 @@ class DashboardService
      */
     private const NEW_PROJECT_DAYS_THRESHOLD = 3;
 
-    public function getSummary(User $user, string $mode): array
+    public function getSummary(User $user, DashboardMode $mode): array
     {
-        return $mode === 'client'
+        return $mode->isClient()
             ? $this->buildClientSummary($user)
             : $this->buildWorkerSummary($user);
     }
 
-    public function getTodayTasks(User $user, string $mode): Collection
+    public function getTodayTasks(User $user, DashboardMode $mode): Collection
     {
-        return $mode === 'client'
+        return $mode->isClient()
             ? $this->buildClientTasks($user)
             : $this->buildWorkerTasks($user);
     }
 
-    public function getRecommendations(User $user, string $mode): Collection
+    public function getRecommendations(User $user, DashboardMode $mode): Collection
     {
-        return $mode === 'client'
+        return $mode->isClient()
             ? $this->buildClientRecommendations($user)
             : $this->buildWorkerRecommendations($user);
     }
 
-    public function getSavedProjects(User $user, string $mode): Collection
+    public function getSavedProjects(User $user, DashboardMode $mode): Collection
     {
-        return $mode === 'client'
+        return $mode->isClient()
             ? $this->buildClientProgressProjects($user)
             : $this->buildWorkerSavedProjects($user);
     }
 
-    public function getSupportResources(string $mode): Collection
+    public function getSupportResources(DashboardMode $mode): Collection
     {
-        return collect(config("dashboard.support_resources.$mode", []));
+        return collect(config("dashboard.support_resources.{$mode->value}", []));
     }
 
     protected function formatProjectCard(Project $project, bool $isRecommendation = false): array
@@ -120,9 +121,9 @@ class DashboardService
         ];
 
         return [
-            'mode' => 'client',
+            'mode' => DashboardMode::Client->value,
             'summary' => $summary,
-            'ctaVariants' => $this->ctaVariantsForMode('client'),
+            'ctaVariants' => $this->ctaVariantsForMode(DashboardMode::Client),
         ];
     }
 
@@ -148,9 +149,9 @@ class DashboardService
         ];
 
         return [
-            'mode' => 'worker',
+            'mode' => DashboardMode::Worker->value,
             'summary' => $summary,
-            'ctaVariants' => $this->ctaVariantsForMode('worker'),
+            'ctaVariants' => $this->ctaVariantsForMode(DashboardMode::Worker),
         ];
     }
 
@@ -327,16 +328,18 @@ class DashboardService
      */
     protected function buildSummaryMetrics(User $user): array
     {
+        $aggregates = $this->projectsForUser($user)
+            ->selectRaw(implode(', ', [
+                "SUM(CASE WHEN status = 'open' THEN 1 ELSE 0 END) as open_count",
+                "SUM(CASE WHEN status = 'in_progress' THEN 1 ELSE 0 END) as in_progress_count",
+                "SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) as completed_count",
+            ]))
+            ->first();
+
         return [
-            'openProjects' => $this->projectsForUser($user)
-                ->where('status', 'open')
-                ->count(),
-            'inProgressProjects' => $this->projectsForUser($user)
-                ->where('status', 'in_progress')
-                ->count(),
-            'completedProjects' => $this->projectsForUser($user)
-                ->where('status', 'completed')
-                ->count(),
+            'openProjects' => (int) ($aggregates?->open_count ?? 0),
+            'inProgressProjects' => (int) ($aggregates?->in_progress_count ?? 0),
+            'completedProjects' => (int) ($aggregates?->completed_count ?? 0),
         ];
     }
 
@@ -443,9 +446,9 @@ class DashboardService
         };
     }
 
-    protected function ctaVariantsForMode(string $mode): array
+    protected function ctaVariantsForMode(DashboardMode $mode): array
     {
-        return config("dashboard.cta_variants.$mode", []);
+        return config("dashboard.cta_variants.{$mode->value}", []);
     }
 
     protected function buildHeadline(int $openProjects, int $inProgressProjects): string
