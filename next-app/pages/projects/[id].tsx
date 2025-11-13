@@ -117,7 +117,7 @@ export default function ProjectDetail() {
           <div className="max-w-4xl mx-auto px-4 py-8">
             <button
               onClick={() => router.back()}
-              className="mb-6 text-gray-400 hover:text-white flex　items-center gap-2"
+              className="mb-6 text-gray-400 hover:text-white flex items-center gap-2"
             >
               ← 戻る
             </button>
@@ -148,7 +148,7 @@ export default function ProjectDetail() {
               <div className="space-y-6">
                 <div>
                   <h2 className="text-xl font-semibold mb-3">案件内容</h2>
-                  <p className="text-gray-300 hitespace-pre-wrap">{project.description}</p>
+                  <p className="text-gray-300 whitespace-pre-wrap">{project.description}</p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

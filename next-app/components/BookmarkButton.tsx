@@ -38,7 +38,7 @@ export default function BookmarkButton({
       className={`p-2 rounded-full transition-colors duration-200 ${
         isBookmarked
           ? 'text-yellow-500 hover:text-yellow-600'
-          : 'text-gray-400 hover:text-hellow-400'
+          : 'text-gray-400 hover:text-yellow-400'
       } ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
       title={isBookmarked ? 'ブックマークを削除' : 'ブックマークに追加'}
     >

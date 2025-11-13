@@ -1,4 +1,5 @@
 import api from './api'
+import type { AxiosResponse } from 'axios'
 import type {
   DashboardData,
   DashboardHeroCTAVariants,
@@ -19,16 +20,13 @@ type ListResponse<T> = {
   data: T[]
 }
 
-const unwrap = <T>(response: { data: T }) => response.data
+const unwrap = <T>(response: AxiosResponse<T>) => response.data
 
 const withMode = (mode: DashboardMode) => ({ params: { mode } })
 
 export const getDashboardSummary = async (mode: DashboardMode): Promise<SummaryResponse> => {
-  const response = await api.get<{ data: SummaryResponse }>(
-    '/api/dashboard/summary',
-    withMode(mode)
-  )
-  return unwrap(response).data
+  const response = await api.get<SummaryResponse>('/api/dashboard/summary', withMode(mode))
+  return unwrap(response)
 }
 
 export const getDashboardTasks = async (mode: DashboardMode): Promise<DashboardTask[]> => {
