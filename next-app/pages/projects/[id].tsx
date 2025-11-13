@@ -117,7 +117,7 @@ export default function ProjectDetail() {
           <div className="max-w-4xl mx-auto px-4 py-8">
             <button
               onClick={() => router.back()}
-              className="mb-6 text-gray-400 hover:text-white flex　items-center gap-2"
+              className="mb-6 text-gray-400 hover:text-white flex items-center gap-2"
             >
               ← 戻る
             </button>

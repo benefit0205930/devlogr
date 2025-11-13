@@ -33,7 +33,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const checkAuth = async () => {
     try {
-      const response = await api.get('/api/me')
+      const response = await api.get<User>('/api/me')
       setUser(response.data)
     } catch (error: unknown) {
       setUser(null)
