@@ -1,61 +1,167 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Devlogr API (Laravel Backend)
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+DevlogrのバックエンドAPIサーバーです。Laravel 12を使用して構築されています。
 
-## About Laravel
+## 技術スタック
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- **Framework**: Laravel 12
+- **Language**: PHP 8.2+
+- **Authentication**: Laravel Sanctum
+- **Database**: MySQL 8.0
+- **Testing**: PHPUnit
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## セットアップ
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### 前提条件
 
-## Learning Laravel
+- Docker & Docker Compose（推奨）
+- または PHP 8.2+、Composer、MySQL 8.0
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### Dockerを使用したセットアップ
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+```bash
+# ルートディレクトリから
+docker-compose up -d
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+# Laravelコンテナに入る
+docker exec -it devlogr-laravel bash
 
-## Laravel Sponsors
+# 依存関係のインストール
+composer install
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+# 環境変数の設定
+cp .env.example .env
+php artisan key:generate
 
-### Premium Partners
+# データベースマイグレーション
+php artisan migrate
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+# シーダーの実行（オプション）
+php artisan db:seed
+```
 
-## Contributing
+### ローカル環境でのセットアップ
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```bash
+# 依存関係のインストール
+composer install
 
-## Code of Conduct
+# 環境変数の設定
+cp .env.example .env
+php artisan key:generate
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+# データベースマイグレーション
+php artisan migrate
+```
 
-## Security Vulnerabilities
+## 開発コマンド
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```bash
+# 開発サーバー起動（Docker内）
+php artisan serve
 
-## License
+# または、composer dev でサーバー・キュー・ログ・Viteを並列起動
+composer dev
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+# マイグレーション実行
+php artisan migrate
+
+# テスト実行
+php artisan test
+# または
+composer test
+
+# コードフォーマット
+./vendor/bin/pint
+```
+
+## APIエンドポイント
+
+### 認証
+
+- `POST /api/login` - ログイン
+- `POST /api/logout` - ログアウト（認証必要）
+- `GET /api/me` - 現在のユーザー情報（認証必要）
+
+### プロジェクト
+
+- `GET /api/projects` - プロジェクト一覧（検索・フィルタリング対応）
+- `GET /api/project/{id}` - プロジェクト詳細
+- `POST /api/projects` - プロジェクト作成（認証必要）
+
+### ブックマーク
+
+- `POST /api/projects/{project}/bookmark` - ブックマークのトグル（認証必要）
+- `GET /api/bookmarks` - ブックマーク一覧（認証必要）
+
+### ダッシュボード
+
+- `GET /api/dashboard/summary` - サマリー情報（認証必要）
+- `GET /api/dashboard/tasks` - タスク一覧（認証必要）
+- `GET /api/dashboard/recommendations` - おすすめ案件（認証必要）
+- `GET /api/dashboard/saved-projects` - 保存した案件（認証必要）
+- `GET /api/dashboard/resources` - サポートリソース（認証必要）
+
+## 認証
+
+Laravel Sanctumを使用したセッションベース認証を実装しています。
+
+1. フロントエンドが `/sanctum/csrf-cookie` にリクエストしてCSRFトークンを取得
+2. 認証情報を `/api/login` にPOST
+3. セッションクッキーで認証状態を維持
+4. 認証が必要なAPIリクエストは自動的にクッキーが送信される
+
+## テスト
+
+```bash
+# 全テスト実行
+php artisan test
+
+# 特定のテストクラスを実行
+php artisan test --filter DashboardControllerTest
+
+# composer test は設定クリア後にテストを実行
+composer test
+```
+
+## コード品質
+
+Laravel Pintを使用してコードフォーマットを統一しています。
+
+```bash
+./vendor/bin/pint
+```
+
+## 環境変数
+
+`.env.example` を参考に、`.env` ファイルを作成して必要な環境変数を設定してください。
+
+主要な環境変数：
+
+- `APP_KEY` - アプリケーションキー（`php artisan key:generate` で生成）
+- `DB_*` - データベース接続情報
+- `SANCTUM_STATEFUL_DOMAINS` - Sanctum認証を許可するドメイン
+- `SESSION_DOMAIN` - セッションクッキーのドメイン
+
+## プロジェクト構造
+
+```
+laravel-api/
+├── app/
+│   ├── Http/
+│   │   ├── Controllers/     # APIコントローラー
+│   │   └── Resources/        # APIリソース
+│   ├── Models/               # Eloquentモデル
+│   └── Services/             # ビジネスロジック
+├── database/
+│   ├── migrations/           # データベースマイグレーション
+│   ├── factories/           # モデルファクトリー
+│   └── seeders/             # データシーダー
+├── routes/
+│   └── api.php              # APIルート定義
+└── tests/                   # テストファイル
+```
+
+## ライセンス
+
+このプロジェクトは [MIT License](../LICENSE) の下で公開されています。
