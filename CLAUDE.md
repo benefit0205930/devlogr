@@ -57,8 +57,13 @@ npm install        # Install dependencies
 npm run dev        # Start development server (port 3000)
 npm run build      # Production build
 npm run lint       # Run ESLint
+npm run lint:fix   # ESLint autofix
+npm run stylelint  # Tailwind-aware CSS lint
+npm run stylelint:fix # Stylelint autofix
 npm run type-check # TypeScript type checking
 ```
+
+Husky hooks live under `next-app/.husky` and run `npm run lint` + `npm run stylelint` automatically before each commit. If hooks break locally, run `npm run prepare` inside `next-app` to reinstall them.
 
 ### Backend (Laravel)
 
@@ -83,7 +88,11 @@ composer test                # Run test suite with config clear
 docker exec -it devlogr-laravel composer test
 docker exec -it devlogr-laravel php artisan test --filter TestName
 
-# Next.js (no test script configured yet)
+# Next.js linting & formatting
+npm run lint
+npm run stylelint
+npm run type-check
+npm run format:check
 ```
 
 ## Key Patterns & Conventions
@@ -120,6 +129,7 @@ docker exec -it devlogr-laravel php artisan test --filter TestName
 - Use environment variables for API endpoints configuration
 - `.env.example` files are included in the repository for reference (`.env` files are gitignored)
 - Project is deployed to Vercel (frontend) and uses MIT License
+- CSS quality is enforced via Stylelint + `stylelint-config-tailwindcss`; limit changes to `styles/` unless you update the Stylelint glob as well.
 
 ## MCP (Model Context Protocol) 接続情報
 

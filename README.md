@@ -189,12 +189,17 @@ cd next-app
 # ESLint
 npm run lint
 
+# Stylelint（Tailwind v4のグローバルCSSを対象）
+npm run stylelint
+
 # TypeScript型チェック
 npm run type-check
 
 # Prettierフォーマットチェック
 npm run format:check
 ```
+
+Husky を導入しているため、初回セットアップ後は `npm run lint` と `npm run stylelint` がコミット前に自動実行されます。もしフックが動作しない場合は `npm run prepare` を再実行してください。
 
 ## 📝 開発コマンド
 

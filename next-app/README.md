@@ -50,6 +50,12 @@ npm run lint
 # ESLint自動修正
 npm run lint:fix
 
+# Stylelint実行
+npm run stylelint
+
+# Stylelint自動修正
+npm run stylelint:fix
+
 # TypeScript型チェック
 npm run type-check
 
@@ -62,7 +68,7 @@ npm run format:check
 
 ## プロジェクト構造
 
-```
+```text
 next-app/
 ├── components/          # Reactコンポーネント
 │   ├── mypage/         # マイページ専用コンポーネント
@@ -136,6 +142,17 @@ Next.jsの標準ESLint設定に加えて、以下のルールを適用：
 - 2スペースインデント
 - シングルクォート
 - セミコロンなし
+
+### Stylelint
+
+- Tailwind CSS v4 を想定した `stylelint-config-standard` + `stylelint-config-tailwindcss`
+- 対象は `styles/` 配下のCSS。必要に応じてスクリプト内のglobを調整してください。
+
+### Husky
+
+- `npm install` 時に `prepare` スクリプト経由でフックがセットアップされます。
+- コミット前に `npm run lint` と `npm run stylelint` が自動で実行され、失敗するとコミットが中断されます。
+- フックが壊れている場合は `npm run prepare` を再実行してください。
 
 ### TypeScript
 

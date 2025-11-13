@@ -7,13 +7,13 @@
 ## ビルド・テスト・開発コマンド
 
 - ルート: `docker-compose up -d` で API・DB・フロントの依存サービスを立ち上げます。
-- フロント: `cd next-app && npm install` 後、`npm run dev` で開発サーバー、`npm run build` で本番ビルド、`npm run lint` で ESLint/Prettier チェックを実行します。
+- フロント: `cd next-app && npm install` 後、`npm run dev` で開発サーバー、`npm run build` で本番ビルド、`npm run lint` と `npm run stylelint` でフロントのLintを実行します。必要に応じて `npm run lint:fix` / `npm run stylelint:fix` で自動修正、フックが壊れた場合は `npm run prepare` で Husky を再セットアップしてください。
   - テスト補助: `npm run type-check` で TypeScript の型検証を実行します。
 - バックエンド: `docker exec -it devlogr-laravel bash` でコンテナに入り、`composer install` と `php artisan migrate` を行ったうえで、`php artisan serve` または `composer dev` でアプリとキュー・ログ・Vite を並列起動できます。
 
 ## コーディングスタイルと命名規約
 
-フロントは TypeScript と Tailwind を使用し、Prettier が 2 スペース・シングルクォートを強制します。ESLint は `next/core-web-vitals` を基礎に未使用変数 (`_` 接頭辞で除外) や `no-console` の警告を有効化しています。React コンポーネントは `PascalCase.tsx`、フックは `useCamelCase.ts` で命名し、ディレクトリ構造に沿う相対 import を推奨します。Laravel 側は `php-cs-fixer` ベースの Pint (`pint.json`) で PSR-12 と Laravel プリセットを適用し、クラス名は `StudlyCase`、メソッドは `camelCase`、設定値は `.env` から取得します。
+フロントは TypeScript と Tailwind を使用し、Prettier が 2 スペース・シングルクォートを強制します。ESLint は `next/core-web-vitals` を基礎に未使用変数 (`_` 接頭辞で除外) や `no-console` の警告を有効化し、CSS については `stylelint-config-standard` + `stylelint-config-tailwindcss` を適用しています。コミット時には Husky が `npm run lint` と `npm run stylelint` を自動実行するため、失敗するとコミットできません。React コンポーネントは `PascalCase.tsx`、フックは `useCamelCase.ts` で命名し、ディレクトリ構造に沿う相対 import を推奨します。Laravel 側は `php-cs-fixer` ベースの Pint (`pint.json`) で PSR-12 と Laravel プリセットを適用し、クラス名は `StudlyCase`、メソッドは `camelCase`、設定値は `.env` から取得します。
 
 ## テストガイドライン
 
