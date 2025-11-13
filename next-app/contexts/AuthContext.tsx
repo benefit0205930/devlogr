@@ -114,13 +114,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const login = async (email: string, password: string) => {
     await api.get('/sanctum/csrf-cookie')
-    await api.post('/login', { email, password })
+    await api.post('/api/login', { email, password })
     await checkAuth()
   }
 
   const logout = async () => {
     try {
-      await api.post('/logout')
+      await api.post('/api/logout')
     } catch (error) {
       console.error('Logout error:', error)
     } finally {
