@@ -24,7 +24,8 @@ return new class extends Migration
             // 応募数カウンター
             $table->integer('application_count')->default(0)->after('status');
 
-            // ステータスの更新
+            // ステータスの更新（最初のマイグレーションで既に正しい値が設定されているが、
+            // 既存のDBで'closed'ステータスが存在する可能性があるため、明示的に更新）
             $table->enum('status', ['draft', 'open', 'in_progress', 'completed', 'cancelled'])
                 ->default('open')->change();
 
