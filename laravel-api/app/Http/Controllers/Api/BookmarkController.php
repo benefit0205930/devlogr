@@ -42,7 +42,7 @@ class BookmarkController extends Controller
             ->with('user')
             ->where('status', 'open')
             ->latest('bookmarks.created_at')
-            ->paginate(10);
+            ->get();
 
         return response()->json($bookmarkedProjects);
     }
