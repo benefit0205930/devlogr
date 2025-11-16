@@ -79,10 +79,9 @@ export function TodayTasks({
         </p>
         <div className="mt-4 inline-flex flex-wrap justify-center gap-3 text-sm">
           <Link href="/projects">案件を探す</Link>
-          <Link href="/profile">プロフィールを編集</Link>
-          <Link href={emptyStateReminderHref ?? '/notifications/reminders'}>
-            リマインダーを設定
-          </Link>
+          {/* TODO: プロフィール編集ページができたら専用ルートに差し替える */}
+          <Link href="/mypage">プロフィールを編集</Link>
+          <Link href={emptyStateReminderHref ?? '/mypage'}>リマインダーを設定</Link>
         </div>
       </section>
     )
@@ -98,7 +97,8 @@ export function TodayTasks({
         <h2 id={headingId} className="text-lg font-semibold text-gray-900">
           今日のタスク
         </h2>
-        <Link href="/tasks" className="text-sm text-blue-600 hover:text-blue-700">
+        {/* TODO: タスク専用ページを用意したらリンク先を差し替える */}
+        <Link href="/mypage" className="text-sm text-blue-600 hover:text-blue-700">
           タスク一覧を見る
         </Link>
       </div>

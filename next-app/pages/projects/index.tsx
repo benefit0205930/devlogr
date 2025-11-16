@@ -80,6 +80,9 @@ export default function ProjectsPage() {
       if (filters.deadline.daysRemaining !== null) {
         params.days_remaining = filters.deadline.daysRemaining
       }
+      if (filters.excludeKeywords.length > 0) {
+        params.exclude_keywords = filters.excludeKeywords.join(',')
+      }
       if (filters.bookmarkedOnly) {
         params.bookmarked_only = true
       }

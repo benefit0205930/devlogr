@@ -17,7 +17,7 @@ export default function MyPage() {
   const mainSectionId = 'mypage-main'
   const emptyStateReminderHref =
     data?.todayTasks.find((task) => task.reminderLink)?.reminderLink ??
-    (mode === 'client' ? '/projects/create' : '/notifications/reminders')
+    (mode === 'client' ? '/projects/create' : '/mypage')
   const hasError = Boolean(error)
   const showSpinner = loading && !data
 

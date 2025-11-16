@@ -45,10 +45,11 @@ export default function AvatarMenu({ user, onLogout }: Props) {
             <Link href="/mypage" className="block px-2 py-2 rounded hover:bg-gray-50">
               マイページ
             </Link>
-            <Link href="/profile" className="block px-2 py-2 rounded hover:bg-gray-50">
+            {/* TODO: プロフィール・設定ページを分離実装したらリンク先を差し替える */}
+            <Link href="/mypage" className="block px-2 py-2 rounded hover:bg-gray-50">
               プロフィール
             </Link>
-            <Link href="/settings" className="block px-2 py-2 rounded hover:bg-gray-50">
+            <Link href="/mypage" className="block px-2 py-2 rounded hover:bg-gray-50">
               設定
             </Link>
             <button
