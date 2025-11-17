@@ -112,11 +112,14 @@ class Project extends Model
     {
         if (empty($keywords)) return $query;
 
-        foreach ($keywords as $keyword) {
-            $query->where('title', 'not like', "%{$keyword}%")
-                ->where('description', 'not like', "%{$keyword}%");
-        }
-        return $query;
+        return $query->whereNot(function ($q) use ($keywords) {
+            foreach ($keywords as $keyword) {
+                $q->orWhere(function ($subQ) use ($keyword) {
+                    $subQ->where('title', 'like', "%{$keyword}%")
+                        ->orWhere('description', 'like', "%{$keyword}%");
+                });
+            }
+        });
     }
 
     // ブックマークフィルタ

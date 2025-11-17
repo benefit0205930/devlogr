@@ -30,12 +30,14 @@ export default function Footer() {
             <h4 className="font-medium text-gray-900 mb-3">リソース</h4>
             <ul className="space-y-2">
               <li>
-                <Link href="/docs" className="text-sm text-gray-600 hover:text-gray-900">
+                {/* TODO: ドキュメントページを実装したらリンク先を差し替える */}
+                <Link href="/" className="text-sm text-gray-600 hover:text-gray-900">
                   ドキュメント
                 </Link>
               </li>
               <li>
-                <Link href="/blog" className="text-sm text-gray-600 hover:text-gray-900">
+                {/* TODO: ブログページを実装したらリンク先を差し替える */}
+                <Link href="/" className="text-sm text-gray-600 hover:text-gray-900">
                   ブログ
                 </Link>
               </li>
@@ -46,12 +48,14 @@ export default function Footer() {
             <h4 className="font-medium text-gray-900 mb-3">法的情報</h4>
             <ul className="space-y-2">
               <li>
-                <Link href="/privacy" className="text-sm text-gray-600 hover:text-gray-900">
+                {/* TODO: プライバシーポリシーを実装したらリンク先を差し替える */}
+                <Link href="/" className="text-sm text-gray-600 hover:text-gray-900">
                   プライバシーポリシー
                 </Link>
               </li>
               <li>
-                <Link href="/terms" className="text-sm text-gray-600 hover:text-gray-900">
+                {/* TODO: 利用規約を実装したらリンク先を差し替える */}
+                <Link href="/" className="text-sm text-gray-600 hover:text-gray-900">
                   利用規約
                 </Link>
               </li>

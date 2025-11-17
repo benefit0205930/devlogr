@@ -69,9 +69,6 @@ export default function Header() {
                       ログイン
                     </Button>
                   </Link>
-                  <Link href="/auth/register" className="ml-2">
-                    <Button size="sm">登録</Button>
-                  </Link>
                 </>
               )}
 
@@ -125,11 +122,6 @@ export default function Header() {
                   <Link href="/auth/login">
                     <Button variant="ghost" fullWidth className="justify-start">
                       ログイン
-                    </Button>
-                  </Link>
-                  <Link href="/auth/register">
-                    <Button variant="ghost" fullWidth className="justify-start">
-                      登録
                     </Button>
                   </Link>
                 </>

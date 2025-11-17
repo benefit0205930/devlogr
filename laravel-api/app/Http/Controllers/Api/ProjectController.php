@@ -12,7 +12,7 @@ class ProjectController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Project::with(['user', 'bookmarkedBy']);
+        $query = Project::with(['user']);
 
         // デフォルトでopenのみ表示（statusフィルタがない場合）
         if (!$request->has('status')) {
@@ -70,8 +70,9 @@ class ProjectController extends Controller
         $sortBy = $request->input('sort', 'newest');
         $query->sortBy($sortBy);
 
-        // ページネーション
-        $perPage = $request->input('per_page', 12);
+        // ページネーション（1〜50件に制限）
+        $perPage = (int) $request->input('per_page', 12);
+        $perPage = max(1, min($perPage, 50));
         $projects = $query->paginate($perPage);
 
         // 現在のユーザーのブックマーク状態を追加

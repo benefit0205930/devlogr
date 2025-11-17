@@ -49,6 +49,17 @@ return [
                     'href' => '/projects/create',
                 ],
             ],
+            'holiday' => [
+                'experimentKey' => 'client-holiday-2025q4',
+                'primary' => [
+                    'label' => '進行中の案件を確認する',
+                    'href' => '/client/projects?status=in_progress',
+                ],
+                'secondary' => [
+                    'label' => 'レビュー待ちを確認する',
+                    'href' => '/client/projects?status=completed',
+                ],
+            ],
             'firstVisit' => [
                 'experimentKey' => 'client-first-visit-2025q4',
                 'primary' => [

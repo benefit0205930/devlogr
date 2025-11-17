@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { CanceledError } from 'axios'
 import {
   DashboardData,
   DashboardHeroCTASet,
@@ -35,12 +36,14 @@ export const useUserDashboard = ({ mode, reloadKey = 0 }: UseUserDashboardOption
 
   useEffect(() => {
     let active = true
+    const controller = new AbortController()
+
     async function load() {
       try {
         setLoading(true)
         setError(null)
 
-        const response = await fetchDashboardData(mode)
+        const response = await fetchDashboardData(mode, { signal: controller.signal })
         const computedCtas = resolveHeroCtas(response.ctaVariants, response.summary.variant)
 
         if (active) {
@@ -48,6 +51,10 @@ export const useUserDashboard = ({ mode, reloadKey = 0 }: UseUserDashboardOption
           setHeroCtas(computedCtas)
         }
       } catch (err) {
+        if (err instanceof CanceledError) {
+          return
+        }
+
         console.error('failed to load dashboard data', err)
         if (active) {
           setError('マイページ情報の読み込みに失敗しました')
@@ -65,6 +72,7 @@ export const useUserDashboard = ({ mode, reloadKey = 0 }: UseUserDashboardOption
 
     return () => {
       active = false
+      controller.abort()
     }
   }, [mode, reloadKey])
 

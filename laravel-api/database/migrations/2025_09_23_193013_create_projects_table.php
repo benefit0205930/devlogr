@@ -20,7 +20,7 @@ return new class extends Migration
             $table->integer('budget_max');
             $table->date('deadline');
             $table->foreignId('user_id')->constrained();
-            $table->enum('status', ['open', 'in_progress', 'closed'])->default('open');
+            $table->enum('status', ['draft', 'open', 'in_progress', 'completed', 'cancelled'])->default('open');
             $table->timestamps();
         });
     }
