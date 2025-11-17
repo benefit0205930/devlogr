@@ -13,7 +13,10 @@ class ProjectSeeder extends Seeder
      */
     public function run(): void
     {
-        $user = User::first();
+        $user = User::first() ?? User::factory()->create([
+            'name' => 'Test User',
+            'email' => 'test@example.com',
+        ]);
 
         // カテゴリと技術スタックのマッピング
         $categories = [
