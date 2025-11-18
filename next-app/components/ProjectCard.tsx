@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { Project } from '@/types/project'
 import BookmarkButton from './BookmarkButton'
+import { cn, getProjectStatusBadgeClass, getProjectStatusLabel } from '@/lib/utils'
 
 interface ProjectCardProps {
   project: Project
@@ -14,28 +15,6 @@ export default function ProjectCard({ project }: ProjectCardProps) {
   const formatDeadline = (deadline: string) => {
     const date = new Date(deadline)
     return date.toLocaleDateString('ja-JP')
-  }
-
-  const getStatusLabel = (status: Project['status']) => {
-    const statusMap = {
-      draft: '下書き',
-      open: '公開中',
-      in_progress: '進行中',
-      completed: '完了',
-      cancelled: 'キャンセル',
-    }
-    return statusMap[status]
-  }
-
-  const getStatusColor = (status: Project['status']) => {
-    const colorMap = {
-      draft: 'bg-gray-100 text-gray-800',
-      open: 'bg-blue-100 text-blue-800',
-      in_progress: 'bg-yellow-100 text-yellow-800',
-      completed: 'bg-green-100 text-green-800',
-      cancelled: 'bg-red-100 text-red-800',
-    }
-    return colorMap[status]
   }
 
   return (
@@ -64,9 +43,12 @@ export default function ProjectCard({ project }: ProjectCardProps) {
 
         <div className="flex items-center justify-between">
           <span
-            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(project.status)}`}
+            className={cn(
+              'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
+              getProjectStatusBadgeClass(project.status)
+            )}
           >
-            {getStatusLabel(project.status)}
+            {getProjectStatusLabel(project.status)}
           </span>
           <span className="text-sm text-gray-500">投稿者: {project.user.name}</span>
         </div>

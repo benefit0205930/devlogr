@@ -1,0 +1,26 @@
+# AWS設定
+aws_region = "ap-northeast-1"
+
+# 環境設定
+environment  = "dev"
+project_name = "devlogr"
+
+# データベース設定
+db_username = "admin"
+# db_password は環境変数または terraform.tfvars で設定（Gitにコミットしない）
+# db_password = "your-secure-password-here"
+
+# EC2設定
+key_pair_name = "your-key-pair-name"
+
+# Laravel設定
+# app_key は環境変数または terraform.tfvars で設定（Gitにコミットしない）
+# app_key を生成するには: php artisan key:generate --show
+# app_key = "base64:..."
+
+# アプリケーションURL（EC2作成後に自動的に設定される）
+app_url = "http://ec2-instance"
+
+# GitHubリポジトリ（オプション: 自動デプロイする場合）
+# github_repo_url = "https://github.com/your-username/devlogr.git"
+

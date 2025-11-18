@@ -10,6 +10,27 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  /* ブランドカラー */
+  --color-brand-primary: #1565c0;
+  --color-brand-primary-dark: #0d47a1;
+  --color-brand-accent: #1565c0;
+
+  /* グラデーションカラー */
+  --color-gradient-start: #0f172a;
+  --color-gradient-mid: #1d4ed8;
+  --color-gradient-end: #1e293b;
+}
+
+/* 共通カードスタイル（オプション: 繰り返しが多い場合は使用） */
+@layer components {
+  .card-base {
+    @apply bg-white rounded-3xl shadow-sm border border-gray-100;
+  }
+
+  .card-base-lg {
+    @apply bg-white rounded-lg shadow-md;
+  }
 }
 
 @media (prefers-color-scheme: dark) {

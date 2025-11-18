@@ -43,7 +43,7 @@ export function HeroSummary({
       aria-labelledby={headingId}
       role="region"
     >
-      <div className="bg-gradient-to-r from-[#0f172a] via-[#1d4ed8] to-[#1e293b] text-white px-6 py-8 md:px-10 md:py-12">
+      <div className="bg-gradient-to-r from-[var(--color-gradient-start)] via-[var(--color-gradient-mid)] to-[var(--color-gradient-end)] text-white px-6 py-8 md:px-10 md:py-12">
         <p className="text-xs uppercase tracking-[0.3em] text-blue-200">My Page</p>
         {variant !== 'default' && !isLoading ? (
           <p className="mt-3 inline-flex items-center rounded-full bg-white/15 px-3 py-1 text-[11px] font-medium text-white">
