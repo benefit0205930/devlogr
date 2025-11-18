@@ -48,6 +48,8 @@ cd /var/www/html
 # GitHubからクローン（リポジトリURLが指定されている場合）
 if [ -n "$github_repo_url" ]; then
     git clone "$github_repo_url" .
+    # Laravelコードがある laravel-api/ ディレクトリに移動
+    cd laravel-api
 else
     # ローカル開発用: ディレクトリ構造を作成
     mkdir -p laravel-api
