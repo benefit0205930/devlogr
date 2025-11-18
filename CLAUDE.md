@@ -204,3 +204,7 @@ npm run format:check
 - `laravel-api/README.md` と `next-app/README.md` をプロジェクト固有の内容に更新
 - `.gitignore` を修正して `.env.example` が確実にGitに含まれるように変更（`.env` は引き続き除外）
 - セキュリティチェック完了（機密情報の除去、.gitignore確認）
+
+### Tailwindデザインシステムリファクタリング（試験的変更）
+
+- デザインシステムの統一化に向けた準備中
