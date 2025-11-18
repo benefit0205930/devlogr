@@ -1,6 +1,13 @@
 import Link from 'next/link'
 import { clsx } from 'clsx'
 import { DashboardTask } from '@/types/dashboard'
+import {
+  getTaskTypeBadgeClass,
+  getTaskTypeLabel,
+  getPriorityBorderClass,
+  getPriorityTextClass,
+  getPriorityLabel,
+} from '@/lib/utils'
 
 interface TodayTasksProps {
   tasks: DashboardTask[]
@@ -109,28 +116,28 @@ export function TodayTasks({
             key={task.id}
             className={clsx(
               'flex flex-col gap-4 rounded-2xl border border-gray-100 bg-gray-50/80 p-4 transition hover:bg-white hover:shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 md:flex-row md:items-center md:justify-between',
-              priorityClass(task.priority)
+              getPriorityBorderClass(task.priority)
             )}
             tabIndex={0}
             role="group"
-            aria-label={`${task.title}（${priorityLabel(task)}）`}
+            aria-label={`${task.title}（${task.priorityLabel || getPriorityLabel(task.priority)}）`}
           >
             <div className="flex flex-col gap-2">
               <div className="flex items-center gap-3">
                 <span
                   className={clsx(
                     'inline-flex items-center rounded-full px-3 py-1 text-xs font-medium',
-                    badgeClass(task.type)
+                    getTaskTypeBadgeClass(task.type)
                   )}
                 >
-                  {typeLabel(task.type)}
+                  {getTaskTypeLabel(task.type)}
                 </span>
                 {task.dueDate && (
                   <span className="text-xs text-gray-500">期限: {formatDueDate(task.dueDate)}</span>
                 )}
                 {task.priorityLabel ? (
                   <span
-                    className={clsx('text-[11px] font-medium', priorityAccentText(task.priority))}
+                    className={clsx('text-[11px] font-medium', getPriorityTextClass(task.priority))}
                     aria-hidden
                   >
                     {task.priorityLabel}
@@ -165,80 +172,6 @@ export function TodayTasks({
       </div>
     </section>
   )
-}
-
-function typeLabel(type: DashboardTask['type']) {
-  switch (type) {
-    case 'message':
-      return 'メッセージ'
-    case 'milestone':
-      return 'マイルストーン'
-    case 'submission':
-      return '納品'
-    case 'review':
-      return 'レビュー'
-    case 'reminder':
-      return 'リマインダー'
-    default:
-      return 'タスク'
-  }
-}
-
-function badgeClass(type: DashboardTask['type']) {
-  switch (type) {
-    case 'message':
-      return 'bg-blue-100 text-blue-700'
-    case 'milestone':
-      return 'bg-purple-100 text-purple-700'
-    case 'submission':
-      return 'bg-emerald-100 text-emerald-700'
-    case 'review':
-      return 'bg-amber-100 text-amber-700'
-    case 'reminder':
-      return 'bg-gray-200 text-gray-700'
-    default:
-      return 'bg-gray-200 text-gray-600'
-  }
-}
-
-function priorityClass(priority: DashboardTask['priority']) {
-  switch (priority) {
-    case 'high':
-      return 'border-l-4 border-l-red-400 pl-3'
-    case 'medium':
-      return 'border-l-4 border-l-amber-400 pl-3'
-    case 'low':
-    default:
-      return 'border-l-4 border-l-emerald-300 pl-3'
-  }
-}
-
-function priorityAccentText(priority: DashboardTask['priority']) {
-  switch (priority) {
-    case 'high':
-      return 'text-red-600'
-    case 'medium':
-      return 'text-amber-600'
-    case 'low':
-    default:
-      return 'text-emerald-600'
-  }
-}
-
-function priorityLabel(task: DashboardTask) {
-  if (task.priorityLabel) {
-    return task.priorityLabel
-  }
-
-  switch (task.priority) {
-    case 'high':
-      return '優先度: 高'
-    case 'medium':
-      return '優先度: 中'
-    case 'low':
-    default:
-      return '優先度: 低'
-  }
 }
 
 function formatDueDate(date: string) {
